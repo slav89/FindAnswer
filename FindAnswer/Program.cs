@@ -20,22 +20,22 @@ namespace FindAnswerCore
             int i = 0;
             while (true)
             {
-                DirectoryInfo d = new DirectoryInfo(@"/Users/slav/Desktop/platform-tools/screens/hq/live");
+                DirectoryInfo d = new DirectoryInfo(@"C:\mydev\screens\hq\live");
                 FileInfo[] Files = d.GetFiles("*.png"); //Getting Text files
 
                 if (Files.Length == 1)
                 {
-                    Thread.Sleep(500);
                     try
                     {
                         var then = DateTime.Now;
                         ProcessScreenshot(i, Files[0].FullName);
                         var took = (DateTime.Now - then).TotalMilliseconds;
-                        Console.WriteLine(took);
+                        //Console.WriteLine(took);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         Console.WriteLine($"{i}. Crashed");
+                        Console.WriteLine(e.Message);
                     }
                     File.Delete(Files[0].FullName);
                     i++;
@@ -56,14 +56,19 @@ namespace FindAnswerCore
         }
 
         private static void ProcessScreenshot(int i, string fileName){
-            string text;
-            try
+            string text = null;
+            var success = false;
+            while (!success)
             {
-                text = OcrClient.Recognize(fileName);
-            }
-            catch (Exception)
-            {
-                text = OcrClient.Recognize(fileName);
+                try
+                {
+                    text = OcrClient.Recognize(fileName);
+                    success = true;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(100);
+                }
             }
             var qa = new test.QuestionSplitter(text);
 
