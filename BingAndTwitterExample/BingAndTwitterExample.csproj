@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>ExampleBing</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="twitterHtml.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="twitterHtml.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="7.1.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.7.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+</Project>
