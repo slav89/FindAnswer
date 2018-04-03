@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace test
+namespace FindAnswer
 {
     public class QuestionSplitter
     {

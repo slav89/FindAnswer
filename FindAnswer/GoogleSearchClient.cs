@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace test
+namespace FindAnswer
 {
     public class GoogleSearchClient
     {
