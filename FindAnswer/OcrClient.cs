@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
 using Grpc.Auth;
 
-namespace FindAnswerCore
+namespace FindAnswer
 {
     public static class OcrClient
     {

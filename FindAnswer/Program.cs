@@ -6,9 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using test;
 
-namespace FindAnswerCore
+namespace FindAnswer
 {
     class Program
     {
@@ -70,7 +69,7 @@ namespace FindAnswerCore
                     Thread.Sleep(100);
                 }
             }
-            var qa = new test.QuestionSplitter(text);
+            var qa = new QuestionSplitter(text);
 
             var question = qa.GetQuestion();
             var questionForQuery = question;
