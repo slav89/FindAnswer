@@ -8,7 +8,7 @@ namespace FindAnswer
     {
         public static string Recognize(string imagePath)
         {
-            var credential = GoogleCredential.FromFile("/Users/slav/Downloads/My Project-d1092d64586a.json")
+            var credential = GoogleCredential.FromFile(@"C:\mydev\My Project-77101559a6d3.json")
                 .CreateScoped(ImageAnnotatorClient.DefaultScopes);
             var channel = new Grpc.Core.Channel(
                 ImageAnnotatorClient.DefaultEndpoint.ToString(),
