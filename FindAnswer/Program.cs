@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using RestSharp;
 using BingAndTwitterExample;
+using Newtonsoft.Json.Linq;
 
 namespace FindAnswer
 {
@@ -15,21 +15,25 @@ namespace FindAnswer
         static void Main(string[] args)
         {
             //TestParsing();
-            TestGuessing();
-            //return;
+//            TestGuessing(100);
+//            return;
 
             int i = 0;
             while (true)
             {
-                DirectoryInfo d = new DirectoryInfo(@"C:\mydev\screens\hq\live");
-                FileInfo[] Files = d.GetFiles("*.png"); //Getting Text files
+                var screensPath = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? @"C:\mydev\screens\hq\live"
+                    : @"/Users/slav/Desktop/platform-tools/screens/hq/live";
 
-                if (Files.Length == 1)
+                DirectoryInfo d = new DirectoryInfo(screensPath);
+                FileInfo[] files = d.GetFiles("*.png"); 
+
+                if (files.Length == 1)
                 {
                     try
                     {
                         var then = DateTime.Now;
-                        ProcessScreenshot(i, Files[0].FullName);
+                        ProcessScreenshot(i, files[0].FullName);
                         var took = (DateTime.Now - then).TotalMilliseconds;
                         //Console.WriteLine(took);
                     }
@@ -38,37 +42,27 @@ namespace FindAnswer
                         Console.WriteLine($"{i}. Crashed");
                         Console.WriteLine(e.Message);
                     }
-                    File.Delete(Files[0].FullName);
+                    File.Delete(files[0].FullName);
                     i++;
                 }
             }
         }
 
-        private static void TestGuessing()
+        private static void TestGuessing(int count)
         {
-            List<QuestionAndAnswers> questionsAndAnswers = null;
+            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
+            var questionsAndAnswersSet = allQuestionsAndAnswers.Take(count).ToList();
 
             var countCorrect = 0;
-            foreach (var q in questionsAndAnswers)
+            foreach (var q in questionsAndAnswersSet)
             {
                var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
                 if (result.StartsWith(q.CorrectAnswer.ToString()))
                 countCorrect++;
             }
-            Console.WriteLine("Success Rate = " + countCorrect/questionsAndAnswers.Count);
+            Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
+            Console.ReadKey();
         }
-
-        //private static long RunSearch(string url)
-        //{
-        //    var client = new RestClient(url);
-        //    var request = new RestRequest();
-
-        //    var result = client.Execute(request);
-        //    var content = JObject.Parse(result.Content);
-        //    var searchInfo = content["searchInformation"];
-        //    var totalResults = (long)searchInfo["totalResults"];
-        //    return totalResults;
-        //}
 
         private static void ProcessScreenshot(int i, string fileName){
             string text = null;
@@ -120,12 +114,20 @@ namespace FindAnswer
             //var queryB = $"{questionForQuery} {b}";
             //var queryC = $"{questionForQuery} {c}";
 
-            var searchClient = new GoogleSearchClient();
+//            var searchClient = new GoogleSearchClient();
+//
+//            var taskD = Task.Run<Answer>(() => AnswerFinder.FindAnswer(question, a, b, c));
+//            var taskA = Task.Run<long>(() => searchClient.RunSearch(queryA));
+//            var taskB = Task.Run<long>(() => searchClient.RunSearch(queryB));
+//            var taskC = Task.Run<long>(() => searchClient.RunSearch(queryC));
+
+
+            var searchClient = new BingSearchClient();
 
             var taskD = Task.Run<Answer>(() => AnswerFinder.FindAnswer(question, a, b, c));
-            var taskA = Task.Run<long>(() => searchClient.RunSearch(queryA));
-            var taskB = Task.Run<long>(() => searchClient.RunSearch(queryB));
-            var taskC = Task.Run<long>(() => searchClient.RunSearch(queryC));
+            var taskA = Task.Run<long>(() => searchClient.TotalSearchResults(queryA));
+            var taskB = Task.Run<long>(() => searchClient.TotalSearchResults(queryB));
+            var taskC = Task.Run<long>(() => searchClient.TotalSearchResults(queryC));
 
             var results = new Dictionary<string, long>();
             results.Add($"1. {a}", taskA.Result);
@@ -135,7 +137,7 @@ namespace FindAnswer
             var answer = taskD.Result;
 
             KeyValuePair<string, long> winner;
-            if (answer.percentSure > 0.5m)
+            if (answer.percentSure > 0)
             {
                 if (answer.CorrectAnswer == 1)
                     winner = results.Single(x => x.Key.StartsWith("1."));

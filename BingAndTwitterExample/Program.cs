@@ -13,6 +13,63 @@ namespace BingAndTwitterExample
     {
         public static void Main(string[] args)
         {
+            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
+            int numberCorrect = 0;
+            int numberWrong = 0;
+            int numberUnknown = 0;
+            foreach (var query in allQuestionsAndAnswers)
+            {
+                var answer = AnswerFinder.FindAnswer(query.Question, query.Answer1, query.Answer2, query.Answer3);
+                if (answer.CorrectAnswer == query.CorrectAnswer)
+                {
+                    numberCorrect++;
+                }
+                else if (answer.CorrectAnswer == -1)
+                {
+                    numberUnknown++;
+                }
+                else
+                {
+                    numberWrong++;
+                }
+                System.Threading.Thread.Sleep(300); // Don't overload API
+
+                Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong)} percent correct of GOOD GUESS.");
+                Console.WriteLine($"Got {numberCorrect} correct.");
+                Console.WriteLine($"Got {numberWrong} wrong.");
+                Console.WriteLine($"Got {numberUnknown} unknown.");
+                Console.WriteLine($"Got {numberWrong + numberCorrect + numberUnknown} total.");
+                Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct.");
+                File.WriteAllLines(@"C:\AnswerFinder\log.txt", new string[]
+                {
+                    $"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong)} percent correct of GOOD GUESS.",
+                    $"Got {numberCorrect} correct.",
+                    $"Got {numberWrong} wrong.",
+                    $"Got {numberUnknown} unknown.",
+                    $"Got {numberWrong + numberCorrect + numberUnknown} total.",
+                    $"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct."
+                });
+
+            }
+
+            Console.WriteLine($"Got {numberCorrect} correct.");
+            Console.WriteLine($"Got {numberWrong} wrong.");
+            Console.WriteLine($"Got {numberUnknown} unknown.");
+            Console.WriteLine($"Got {numberWrong + numberCorrect + numberUnknown} total.");
+            Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct.");
+
+            Console.WriteLine($@"Wrote {allQuestionsAndAnswers.Count} rows to C:\AnswerFinder\QuestionsAndAnswers.csv");
+            Console.WriteLine(@"Press any key to finish.");
+            Console.ReadKey();
+        }
+
+        
+    }
+
+    public static class TwitterParser
+    {
+        public static List<QuestionAndAnswers> ParseQuestionsAndAnswerses()
+        {
             var doc = new HtmlDocument();
             doc.Load("twitterHtml.txt", Encoding.UTF8);
 
@@ -61,61 +118,14 @@ namespace BingAndTwitterExample
                 Encoding = Encoding.UTF8
             };
 
-            Directory.CreateDirectory(@"C:\AnswerFinder\");
-            using (var writer = new StreamWriter(@"C:\AnswerFinder\QuestionsAndAnswers.csv", false, Encoding.UTF8))
+            using (var writer = new StreamWriter($"{AppDomain.CurrentDomain.BaseDirectory}\\QuestionsAndAnswers.csv", false, Encoding.UTF8))
             {
                 var csv = new CsvWriter(writer, config);
 
                 csv.WriteRecords(allQuestionsAndAnswers);
             }
 
-            int numberCorrect = 0;
-            int numberWrong = 0;
-            int numberUnknown = 0;
-            foreach (var query in allQuestionsAndAnswers)
-            {
-                var answer = AnswerFinder.FindAnswer(query.Question, query.Answer1, query.Answer2, query.Answer3);
-                if (answer.CorrectAnswer == query.CorrectAnswer)
-                {
-                    numberCorrect++;
-                }
-                else if (answer.CorrectAnswer == -1)
-                {
-                    numberUnknown++;
-                }
-                else
-                {
-                    numberWrong++;
-                }
-                System.Threading.Thread.Sleep(300); // Don't overload API
-
-                Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong)} percent correct of GOOD GUESS.");
-                Console.WriteLine($"Got {numberCorrect} correct.");
-                Console.WriteLine($"Got {numberWrong} wrong.");
-                Console.WriteLine($"Got {numberUnknown} unknown.");
-                Console.WriteLine($"Got {numberWrong + numberCorrect + numberUnknown} total.");
-                Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct.");
-                File.WriteAllLines(@"C:\AnswerFinder\log.txt", new string[]
-                {
-                    $"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong)} percent correct of GOOD GUESS.",
-                    $"Got {numberCorrect} correct.",
-                    $"Got {numberWrong} wrong.",
-                    $"Got {numberUnknown} unknown.",
-                    $"Got {numberWrong + numberCorrect + numberUnknown} total.",
-                    $"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct."
-                });
-
-            }
-
-            Console.WriteLine($"Got {numberCorrect} correct.");
-            Console.WriteLine($"Got {numberWrong} wrong.");
-            Console.WriteLine($"Got {numberUnknown} unknown.");
-            Console.WriteLine($"Got {numberWrong + numberCorrect + numberUnknown} total.");
-            Console.WriteLine($"Got {(decimal)numberCorrect / ((decimal)numberCorrect + (decimal)numberWrong + (decimal)numberUnknown)} percent correct.");
-
-            Console.WriteLine($@"Wrote {allQuestionsAndAnswers.Count} rows to C:\AnswerFinder\QuestionsAndAnswers.csv");
-            Console.WriteLine(@"Press any key to finish.");
-            Console.ReadKey();
+            return allQuestionsAndAnswers;
         }
     }
 
