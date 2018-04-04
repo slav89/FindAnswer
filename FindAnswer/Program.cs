@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using BingAndTwitterExample;
 
 namespace FindAnswer
 {
@@ -14,6 +15,7 @@ namespace FindAnswer
         static void Main(string[] args)
         {
             //TestParsing();
+            TestGuessing();
             //return;
 
             int i = 0;
@@ -42,17 +44,31 @@ namespace FindAnswer
             }
         }
 
-        private static long RunSearch(string url)
+        private static void TestGuessing()
         {
-            var client = new RestClient(url);
-            var request = new RestRequest();
+            List<QuestionAndAnswers> questionsAndAnswers = null;
 
-            var result = client.Execute(request);
-            var content = JObject.Parse(result.Content);
-            var searchInfo = content["searchInformation"];
-            var totalResults = (long)searchInfo["totalResults"];
-            return totalResults;
+            var countCorrect = 0;
+            foreach (var q in questionsAndAnswers)
+            {
+               var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
+                if (result.StartsWith(q.CorrectAnswer.ToString()))
+                countCorrect++;
+            }
+            Console.WriteLine("Success Rate = " + countCorrect/questionsAndAnswers.Count);
         }
+
+        //private static long RunSearch(string url)
+        //{
+        //    var client = new RestClient(url);
+        //    var request = new RestRequest();
+
+        //    var result = client.Execute(request);
+        //    var content = JObject.Parse(result.Content);
+        //    var searchInfo = content["searchInformation"];
+        //    var totalResults = (long)searchInfo["totalResults"];
+        //    return totalResults;
+        //}
 
         private static void ProcessScreenshot(int i, string fileName){
             string text;
@@ -67,6 +83,19 @@ namespace FindAnswer
             var qa = new QuestionSplitter(text);
 
             var question = qa.GetQuestion();
+
+            var a = qa.GetCaseA();
+            var b = qa.GetCaseB();
+            var c = qa.GetCaseC();
+
+            Console.WriteLine(i + ". " + question + "?");
+            var winnerString = FigureOutRightAnswer(question, a, b, c);
+            Console.WriteLine(winnerString);
+            Console.WriteLine();
+        }
+
+        static string FigureOutRightAnswer(string question, string a, string b, string c)
+        {
             var questionForQuery = question;
 
             var negative = false;
@@ -76,11 +105,7 @@ namespace FindAnswer
                 questionForQuery = question.Replace("not", "");
             }
 
-            var a = qa.GetCaseA();
-            var b = qa.GetCaseB();
-            var c = qa.GetCaseC();
-
-            //quoates around cases - all words in case should be present
+            //quotes around cases - all words in case should be present
             var queryA = $"{questionForQuery} \"{a}\"";
             var queryB = $"{questionForQuery} \"{b}\"";
             var queryC = $"{questionForQuery} \"{c}\"";
@@ -92,28 +117,44 @@ namespace FindAnswer
 
             var searchClient = new GoogleSearchClient();
 
+            var taskD = Task.Run<Answer>(() => AnswerFinder.FindAnswer(question, a, b, c));
             var taskA = Task.Run<long>(() => searchClient.RunSearch(queryA));
             var taskB = Task.Run<long>(() => searchClient.RunSearch(queryB));
             var taskC = Task.Run<long>(() => searchClient.RunSearch(queryC));
 
             var results = new Dictionary<string, long>();
-            results.Add($"A. {a}", taskA.Result);
-            results.Add($"B. {b}", taskB.Result);
-            results.Add($"C. {c}", taskC.Result);
+            results.Add($"1. {a}", taskA.Result);
+            results.Add($"2. {b}", taskB.Result);
+            results.Add($"3. {c}", taskC.Result);
 
-            var winner = negative
+            var answer = taskD.Result;
+
+            KeyValuePair<string, long> winner;
+            if (answer.percentSure > 0.5m)
+            {
+                if (answer.CorrectAnswer == 1)
+                    winner = results.Single(x => x.Key.StartsWith("1."));
+                else if (answer.CorrectAnswer == 2)
+                    winner = results.Single(x => x.Key.StartsWith("2."));
+                else if (answer.CorrectAnswer == 3)
+                    winner = results.Single(x => x.Key.StartsWith("3."));
+            }
+
+            else
+            {
+                winner = negative
                 ? results.OrderByDescending(res => res.Value).LastOrDefault()
                 : results.OrderByDescending(res => res.Value).FirstOrDefault();
-            
-            Console.WriteLine(i + ". " + question + "?");
-            Console.WriteLine(winner.Key);
+            }
+
+            var winnerString = winner.Key;
+
+            return winnerString;
 
             //For testing
             //Console.WriteLine(a);
             //Console.WriteLine(b);
-            //Console.WriteLine(c);
-
-            Console.WriteLine();
+            //Console.WriteLine(c)
         }
 
         static void TestParsing()
@@ -141,6 +182,6 @@ namespace FindAnswer
                 Console.WriteLine($"C. {c}");
                 Console.WriteLine();
             }
-        }
+        }       
     }
 }
