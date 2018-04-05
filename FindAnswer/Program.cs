@@ -95,13 +95,13 @@ namespace FindAnswer
 
         static string FigureOutRightAnswer(string question, string a, string b, string c)
         {
-            var questionForQuery = question;
+            var questionForQuery = question.ToLower();
 
             var negative = false;
             if (question.ToLower().Contains(" not "))
             {
                 negative = true;
-                questionForQuery = question.Replace("not", "");
+                questionForQuery = questionForQuery.Replace("not", "");
             }
 
             //quotes around cases - all words in case should be present
