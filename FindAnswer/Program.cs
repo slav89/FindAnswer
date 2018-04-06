@@ -14,9 +14,11 @@ namespace FindAnswer
     {
         static void Main(string[] args)
         {
-            //TestParsing();
+//            TestParsing();
 //            TestGuessing(100);
 //            return;
+            var backfiller = new Backfiller();
+            backfiller.Backfill();
 
             int i = 0;
             while (true)
@@ -125,9 +127,9 @@ namespace FindAnswer
             var searchClient = new BingSearchClient();
 
             var taskD = Task.Run<Answer>(() => AnswerFinder.FindAnswer(question, a, b, c));
-            var taskA = Task.Run<long>(() => searchClient.TotalSearchResults(queryA));
-            var taskB = Task.Run<long>(() => searchClient.TotalSearchResults(queryB));
-            var taskC = Task.Run<long>(() => searchClient.TotalSearchResults(queryC));
+            var taskA = Task.Run<long>(() => searchClient.Search(queryA).TotalResults);
+            var taskB = Task.Run<long>(() => searchClient.Search(queryB).TotalResults);
+            var taskC = Task.Run<long>(() => searchClient.Search(queryC).TotalResults);
 
             var results = new Dictionary<string, long>();
             results.Add($"1. {a}", taskA.Result);

@@ -19,21 +19,6 @@ namespace FindAnswer
         {
         }
 
-        public long TotalSearchResults(string query)
-        {
-            SearchResult result;
-            long totalResults = 0;
-
-            if (!_resultsCache.ContainsKey(query))
-            {
-                _resultsCache.Add(query, Search(query));
-            }
-
-            totalResults = (long)JObject.Parse(_resultsCache[query].jsonResult)["webPages"]["totalEstimatedMatches"];
-            return totalResults;
-        }
-
-
         public SearchResult Search(string query)
         {
             // Construct the URI of the search request
@@ -49,7 +34,8 @@ namespace FindAnswer
             var searchResult = new SearchResult()
             {
                 jsonResult = json,
-                relevantHeaders = new Dictionary<String, String>()
+                relevantHeaders = new Dictionary<String, String>(),
+                TotalResults = (long)JObject.Parse(json)["webPages"]["totalEstimatedMatches"]
             };
 
             // Extract Bing HTTP headers
@@ -66,6 +52,7 @@ namespace FindAnswer
         {
             public String jsonResult;
             public Dictionary<String, String> relevantHeaders;
+            public long TotalResults;
         }
     }
 }
