@@ -33,7 +33,8 @@ namespace FindAnswer
             var question = m.Groups[1].Value;
             if (question.StartsWith("Spectator"))
                 question = question.Split("Spectator", 2)[1];
-
+            if (question.Contains("Eliminated"))
+                question = question.Split("Eliminated\n", 2)[1];
             var tidyquestion = question.Replace("\n", " ").Replace("-", "").Trim();
 
             return tidyquestion;
