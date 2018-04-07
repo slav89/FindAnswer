@@ -7,19 +7,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using BingAndTwitterExample;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace FindAnswer
 {
     class Program
     {
+        protected static ChromeDriver _browser;
         static void Main(string[] args)
         {
 //            TestParsing();
 //            TestGuessing(100);
 //            return;
-            var backfiller = new Backfiller();
-            backfiller.Backfill();
-
+            //var backfiller = new Backfiller();
+            //backfiller.Backfill();
+            _browser = new ChromeDriver("/Users/slav/FindAnswer/FindAnswer/bin/Debug/netcoreapp2.0/");
+            //Firefox's proxy driver executable is in a folder already
+            //  on the host system's PATH environment variable.
+           
             int i = 0;
             while (true)
             {
@@ -84,6 +90,9 @@ namespace FindAnswer
             var qa = new QuestionSplitter(text);
 
             var question = qa.GetQuestion();
+
+            Task.Run(() => 
+                     _browser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
 
             var a = qa.GetCaseA();
             var b = qa.GetCaseB();

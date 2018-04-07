@@ -16,7 +16,7 @@ namespace FindAnswer
 
         public string GetQuestion()
         {
-            return _text.ToLower().Contains("cashshow")
+            return _text.Contains("CASH")
                        ? GetQuestionCashShow()
                             : GetQuestionHq();
         }
@@ -31,6 +31,8 @@ namespace FindAnswer
 
             var m = regex1.Match(match.Value.Split("\n", 2)[1]);
             var question = m.Groups[1].Value;
+            if (question.StartsWith("Spectator"))
+                question = question.Split("Spectator", 2)[1];
 
             var tidyquestion = question.Replace("\n", " ").Replace("-", "").Trim();
 
@@ -100,6 +102,18 @@ namespace FindAnswer
                 }
 
                 var casesString = _text.Split("?", 2)[1];
+
+                Regex reg = new Regex("\nPrize.*\n");
+
+                var m = reg.Match(casesString);
+
+
+                if (m.Success)
+                {
+                    casesString = casesString.Replace(m.Groups[0].Value, "\n");
+                }
+
+
                 _cases = casesString.Split("\n", 5);
 
                 if (_cases.Length < 5)
