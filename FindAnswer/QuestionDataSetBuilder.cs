@@ -83,8 +83,6 @@ namespace FindAnswer
                 CasesData = casesData
             };
 
-            var json = JsonConvert.SerializeObject(questionDataSet, Formatting.Indented);
-            File.WriteAllText($"C:\\mydev\\FindAnswer\\QuestionDataSets\\{qa.Id}.json", json);
             return questionDataSet;      
         }
     }

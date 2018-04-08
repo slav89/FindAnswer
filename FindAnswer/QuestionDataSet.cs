@@ -29,7 +29,7 @@ namespace FindAnswer
         public SearchResult SearchResultWithQuestionPrepended { get; set; }
         public SearchResult SearchResultWithQuestionPrependedAndCaseInQuotes { get; set; }
         public int TimesMentionedInQuestionSearchResult { get; set; }
-        public Dictionary<string, object> Attributes { get; set; }
+        public List<string> Attributes { get; set; }
         public bool? IsCorrect { get; set; }
     }
 }

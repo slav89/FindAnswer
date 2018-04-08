@@ -16,57 +16,15 @@ namespace FindAnswer
     {
         public List<QuestionDataSet> Backfill()
         {
-
             var allQuestionsAndAnswers = ParseFromCsv("/Users/slav/FindAnswer/BingAndTwitterExample/TwitterApiWithPython/hqtriviascribe_tweets.csv");
-            //var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
 
-            return allQuestionsAndAnswers.Select(qa =>
+            var builder = new QuestionDataSetBuilder();
+            return allQuestionsAndAnswers.Select(qa => 
             {
-                var client = new BingSearchClient();
-
-                var questionData = new QuestionData
-                {
-                    Question = qa.Question,
-                    SearchResult = client.Search(qa.Question)
-                };
-
-                var casesData = new Dictionary<int, CaseData>();
-                
-                casesData.Add(1, new CaseData
-                {
-                    Case = qa.Answer1,
-                    TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer1),
-                    SearchResultWithQuestionPrepended = client.Search($"{qa.Question} {qa.Answer1}"),
-                    SearchResultWithQuestionPrependedAndCaseInQuotes = client.Search($"{qa.Question} \"{qa.Answer1}\""),
-                    IsCorrect = qa.CorrectAnswer == 1
-                });
-                casesData.Add(2, new CaseData
-                {
-                    Case = qa.Answer2,
-                    TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer1),
-                    SearchResultWithQuestionPrepended = client.Search($"{qa.Question} {qa.Answer2}"),
-                    SearchResultWithQuestionPrependedAndCaseInQuotes = client.Search($"{qa.Question} \"{qa.Answer2}\""),
-                    IsCorrect = qa.CorrectAnswer == 2
-                });
-                casesData.Add(3, new CaseData
-                {
-                    Case = qa.Answer3,
-                    TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer1),
-                    SearchResultWithQuestionPrepended = client.Search($"{qa.Question} {qa.Answer3}"),
-                    SearchResultWithQuestionPrependedAndCaseInQuotes = client.Search($"{qa.Question} \"{qa.Answer3}\""),
-                    IsCorrect = qa.CorrectAnswer == 3
-                });
-                            
-                var questionDataSet = new QuestionDataSet
-                {
-                    Id = qa.Id, 
-                    QuestionData = questionData,
-                    CasesData = casesData
-                };
-
-                var json = JsonConvert.SerializeObject(questionDataSet, Formatting.Indented);
+                var set = builder.Build(qa);
+                var json = JsonConvert.SerializeObject(set, Formatting.Indented);
                 File.WriteAllText($"C:\\mydev\\FindAnswer\\QuestionDataSets\\{qa.Id}.json", json);
-                return questionDataSet;
+                return set;
             }).ToList();
         }
 
