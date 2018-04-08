@@ -8,7 +8,7 @@ namespace FindAnswer
 {
     public class QuestionDataSet
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public QuestionData QuestionData { get; set; }
         public Dictionary<int, CaseData> CasesData { get; set; }
     }
@@ -17,9 +17,10 @@ namespace FindAnswer
     {
         public int Number { get; set; }
         public string Question { get; set; }
+        public string QuestionForQuery { get; set; }
         public SearchResult SearchResult { get; set; }
         public SearchResult SearchResultWithModifiedQuery { get; set; }
-        public Dictionary<string, object> Attributes { get; set; }
+        public List<string> Attributes { get; set; }
     }
 
     public class CaseData

@@ -20,11 +20,9 @@ namespace FindAnswer
 //            TestParsing();
 //            TestGuessing(100);
 //            return;
-            //var backfiller = new Backfiller();
-            //backfiller.Backfill();
+            var backfiller = new Backfiller();
+            backfiller.Backfill();
             _browser = new ChromeDriver("/Users/slav/FindAnswer/FindAnswer/bin/Debug/netcoreapp2.0/");
-            //Firefox's proxy driver executable is in a folder already
-            //  on the host system's PATH environment variable.
            
             int i = 0;
             while (true)
@@ -54,22 +52,6 @@ namespace FindAnswer
                     i++;
                 }
             }
-        }
-
-        private static void TestGuessing(int count)
-        {
-            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
-            var questionsAndAnswersSet = allQuestionsAndAnswers.Take(count).ToList();
-
-            var countCorrect = 0;
-            foreach (var q in questionsAndAnswersSet)
-            {
-               var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
-                if (result.StartsWith(q.CorrectAnswer.ToString()))
-                countCorrect++;
-            }
-            Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
-            Console.ReadKey();
         }
 
         private static void ProcessScreenshot(int i, string fileName){
@@ -200,6 +182,22 @@ namespace FindAnswer
                 Console.WriteLine($"C. {c}");
                 Console.WriteLine();
             }
-        }       
+        }  
+
+        private static void TestGuessing(int count)
+        {
+            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
+            var questionsAndAnswersSet = allQuestionsAndAnswers.Take(count).ToList();
+
+            var countCorrect = 0;
+            foreach (var q in questionsAndAnswersSet)
+            {
+                var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
+                if (result.StartsWith(q.CorrectAnswer.ToString()))
+                    countCorrect++;
+            }
+            Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
+            Console.ReadKey();
+        }
     }
 }

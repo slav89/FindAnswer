@@ -131,19 +131,18 @@ namespace BingAndTwitterExample
 
     public class QuestionAndAnswers
     {
-        [Name("Question")]
+        public long Id { get; set; }
+
+        public DateTime Timestamp { get; set; }
+
         public string Question { get; set; }
 
-        [Name("Answer1")]
         public string Answer1 { get; set; }
 
-        [Name("Answer2")]
         public string Answer2 { get; set; }
 
-        [Name("Answer3")]
         public string Answer3 { get; set; }
 
-        [Name("CorrectAnswer")]
         public int CorrectAnswer { get; set; }
     }
 }
