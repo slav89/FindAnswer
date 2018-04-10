@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BingAndTwitterExample;
-using Newtonsoft.Json;
 using static FindAnswer.BingSearchClient;
 
 namespace FindAnswer
 {
     public class QuestionDataSetBuilder
     {
-        public QuestionDataSetBuilder()
-        {
-        }
-
         public QuestionDataSet Build(QuestionAndAnswers qa)
         {
             var client = new BingSearchClient();
@@ -22,22 +15,22 @@ namespace FindAnswer
             var questionForQuery = question.ToLower();
 
             var negative = false;
-            if (question.Contains(" not "))
+            if (questionForQuery.Contains(" not ") || questionForQuery.Contains(" never "))
             {
                 negative = true;
-                questionForQuery = questionForQuery.Replace("not ", "");
+                questionForQuery = questionForQuery.Replace("not ", "").Replace("never ", "");
             }
 
             var searchQuestionTask = Task.Run<SearchResult>(() => client.Search(questionForQuery));
 
-            var aCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} {qa.Answer1}"));
-            var aCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} \"{qa.Answer1}\""));
+            var aCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer1}"));
+            var aCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer1}\""));
 
-            var bCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} {qa.Answer2}"));
-            var bCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} \"{qa.Answer2}\""));
+            var bCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer2}"));
+            var bCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer2}\""));
 
-            var cCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} {qa.Answer3}"));
-            var cCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{qa.Question} \"{qa.Answer3}\""));
+            var cCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer3}"));
+            var cCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer3}\""));
 
 
             var questionData = new QuestionData
@@ -83,7 +76,7 @@ namespace FindAnswer
                 CasesData = casesData
             };
 
-            return questionDataSet;      
+            return questionDataSet;   
         }
     }
 }
