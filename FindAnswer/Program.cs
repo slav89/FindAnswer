@@ -30,11 +30,10 @@ namespace FindAnswer
         {
 //            TestParsing();
 //            TestGuessing(100);
-//            return;
-            var backfiller = new Backfiller();
-//            backfiller.Backfill();
-            backfiller.Explore();
-            return;
+                        var backfiller = new Backfiller();
+//                        backfiller.Backfill();
+                        backfiller.Explore();
+                        return;
             WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
             ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 

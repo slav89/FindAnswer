@@ -25,7 +25,7 @@ namespace FindAnswer
                     ImageAnnotatorClient.DefaultEndpoint.ToString(),
                     credential.ToChannelCredentials());
             
-                var client = ImageAnnotatorClient.Create(channel);
+                client = ImageAnnotatorClient.Create(channel);
             }
 
             var image = Image.FromFile(imagePath);

@@ -9,7 +9,16 @@ namespace FindAnswer
         public static string normalize(string orig)
         {
             string result = orig.ToLowerInvariant();
-            var strs = new string[] { "ˈ", "\"", "'", "‘", "’", "“", "”", "é", "ɑ" };
+            var strs = new string[]
+            {
+                "ˈ",  
+                "\"", "'", "`", "\'",
+                "‘", "’", "“", "”",
+                ",", "،", "、",
+                    "‹", "›", "«", "»",
+                    "&", "′", "″", "‴"
+//                "é", "ɑ"
+            };
             foreach (var str in strs)
             {
                 result = result.Replace(str, "");

@@ -23,23 +23,23 @@ namespace FindAnswer
             return result;
         }
 
-        public static Dictionary<int, CaseData> SelectByMostMentionedFuzzy(this QuestionDataSet dataSet)
+        public static Dictionary<int, CaseData> SelectByMostMentionedFuzzy(this QuestionDataSet dataSet, int fuzzyness = 0)
         {
             foreach (var kvp in dataSet.CasesData)
             {
                 kvp.Value.TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(
-                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, 4);
+                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness);
             }
 
             return dataSet.CasesData.SelectByMostMentioned();
         }
 
-        public static Dictionary<int, CaseData> SelectByLeastMentionedFuzzy(this QuestionDataSet dataSet)
+        public static Dictionary<int, CaseData> SelectByLeastMentionedFuzzy(this QuestionDataSet dataSet, int fuzzyness = 0)
         {
             foreach (var kvp in dataSet.CasesData)
             {
                 kvp.Value.TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(
-                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, 4);
+                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness);
             }
 
             return dataSet.CasesData.SelectByLeastMentioned();
