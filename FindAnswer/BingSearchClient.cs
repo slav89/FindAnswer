@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 
 namespace FindAnswer
 {
@@ -12,8 +10,6 @@ namespace FindAnswer
     {
         const string BaseUri = "https://api.cognitive.microsoft.com/bing/v7.0/search";
         const string AccessKey = "51f488e4f9fc402b948d284653925471";
-
-        private readonly Dictionary<string, SearchResult> _resultsCache = new Dictionary<string, SearchResult>();
 
         public BingSearchClient()
         {
