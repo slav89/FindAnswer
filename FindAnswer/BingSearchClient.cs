@@ -47,6 +47,7 @@ namespace FindAnswer
             var searchResult = new SearchResult()
             {
                 jsonResult = json,
+                TotalResults = (long)JObject.Parse(json)["webPages"]["totalEstimatedMatches"]
             };
 
             return searchResult;
@@ -55,6 +56,7 @@ namespace FindAnswer
         public struct SearchResult
         {
             public String jsonResult;
+            public long TotalResults;
         }
     }
 }
