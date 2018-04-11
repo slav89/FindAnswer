@@ -60,14 +60,14 @@ namespace BingAndTwitterExample
 
         public static Answer FindAnswer(string question, string answer1, string answer2, string answer3)
         {
-            Console.OutputEncoding = Encoding.UTF8;
+//            Console.OutputEncoding = Encoding.UTF8;
             
-            Console.WriteLine("Searching the Web for: " + question);
+//            Console.WriteLine("Searching the Web for: " + question);
 
             SearchResult result = BingWebSearch(question);
 
-            Console.WriteLine("\nJSON Response:\n");
-            Console.WriteLine(JsonPrettyPrint(result.jsonResult));
+//            Console.WriteLine("\nJSON Response:\n");
+//            Console.WriteLine(JsonPrettyPrint(result.jsonResult));
 
             int resultsCountFor1 = FindNumberOfAnswersInString(result.jsonResult, answer1);
             int resultsCountFor2 = FindNumberOfAnswersInString(result.jsonResult, answer2);

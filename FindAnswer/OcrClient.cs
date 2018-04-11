@@ -1,4 +1,5 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using System.Runtime.InteropServices;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
 using Grpc.Auth;
 
@@ -8,7 +9,11 @@ namespace FindAnswer
     {
         public static string Recognize(string imagePath)
         {
-            var credential = GoogleCredential.FromFile("/Users/slav/Downloads/My Project-d1092d64586a.json")
+            var googleCredsPath = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? @"C:\mydev\My Project-77101559a6d3.json"
+                : "/Users/slav/Downloads/My Project-d1092d64586a.json";
+
+            var credential = GoogleCredential.FromFile(googleCredsPath)
                 .CreateScoped(ImageAnnotatorClient.DefaultScopes);
             var channel = new Grpc.Core.Channel(
                 ImageAnnotatorClient.DefaultEndpoint.ToString(),

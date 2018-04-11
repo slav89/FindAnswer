@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FindAnswer", "FindAnswer\Fi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingAndTwitterExample", "BingAndTwitterExample\BingAndTwitterExample.csproj", "{8503D96E-5BAD-4740-957F-3AE1255D8C53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{3E4AD391-5835-4A59-BC17-A4FE3F772184}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8503D96E-5BAD-4740-957F-3AE1255D8C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8503D96E-5BAD-4740-957F-3AE1255D8C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8503D96E-5BAD-4740-957F-3AE1255D8C53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E4AD391-5835-4A59-BC17-A4FE3F772184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E4AD391-5835-4A59-BC17-A4FE3F772184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E4AD391-5835-4A59-BC17-A4FE3F772184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E4AD391-5835-4A59-BC17-A4FE3F772184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
