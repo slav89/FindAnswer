@@ -32,7 +32,9 @@ namespace FindAnswer
 //            TestGuessing(100);
 //            return;
             var backfiller = new Backfiller();
-            backfiller.Backfill();
+//            backfiller.Backfill();
+            backfiller.Explore();
+            return;
             WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
             ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 
@@ -104,7 +106,7 @@ namespace FindAnswer
             if (question.ToLower().Contains(" not "))
             {
                 negative = true;
-                questionForQuery = questionForQuery.Replace("not", "");
+                questionForQuery = questionForQuery.Replace(" not ", " ");
             }
 
             //quotes around cases - all words in case should be present
@@ -113,9 +115,9 @@ namespace FindAnswer
             var queryC = $"{questionForQuery} \"{c}\"";
 
             //no quotes
-            //var queryA = $"{questionForQuery} {a}";
-            //var queryB = $"{questionForQuery} {b}";
-            //var queryC = $"{questionForQuery} {c}";
+//            var queryA = $"{questionForQuery} {a}";
+//            var queryB = $"{questionForQuery} {b}";
+//            var queryC = $"{questionForQuery} {c}";
 
 //            var searchClient = new GoogleSearchClient();
 //

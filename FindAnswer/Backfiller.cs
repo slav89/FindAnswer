@@ -119,5 +119,217 @@ namespace FindAnswer
                 return qds;
             }).ToList();
         }
+
+        public void Explore()
+        {
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHOLE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var sets = LoadQuestionDataSets();
+            ApplyStrategy(sets, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(sets, GuessByTotalResults);
+            ApplyStrategy(sets, GuessByTotalResultsInQuotes);
+            ApplyStrategy(sets, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(sets, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(sets, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("POSITIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var positiveSet = sets.Where(set => !set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(positiveSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(positiveSet, GuessByTotalResults);
+            ApplyStrategy(positiveSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(positiveSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(positiveSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(positiveSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("NEGATIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var negativeSet = sets.Where(set => set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(negativeSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(negativeSet, GuessByTotalResults);
+            ApplyStrategy(negativeSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(negativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(negativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(negativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHICH OF THESE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var whichOfTheseSet = sets.Where(set => set.QuestionData.QuestionForQuery.Contains("which of these")).ToList();
+            ApplyStrategy(whichOfTheseSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(whichOfTheseSet, GuessByTotalResults);
+            ApplyStrategy(whichOfTheseSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(whichOfTheseSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(whichOfTheseSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(whichOfTheseSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHICH OF THESE NEGATIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var whichOfTheseNegativeSet = whichOfTheseSet.Where(set => set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByTotalResults);
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(whichOfTheseNegativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHICH SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var whichSet = sets.Where(set => set.QuestionData.QuestionForQuery.Contains("which")).ToList();
+            ApplyStrategy(whichSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(whichSet, GuessByTotalResults);
+            ApplyStrategy(whichSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(whichSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(whichSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(whichSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHICH POSITIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var whichPositiveSet = whichSet.Where(set => !set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(whichPositiveSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(whichPositiveSet, GuessByTotalResults);
+            ApplyStrategy(whichPositiveSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(whichPositiveSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(whichPositiveSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(whichPositiveSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("WHICH NEGATIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            var whichNegativeSet = negativeSet.Where(set => set.QuestionData.QuestionForQuery.Contains("which")).ToList();
+            ApplyStrategy(whichNegativeSet, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(whichNegativeSet, GuessByTotalResults);
+            ApplyStrategy(whichNegativeSet, GuessByTotalResultsInQuotes);
+            ApplyStrategy(whichNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(whichNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(whichNegativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+
+            Console.ReadKey();
+        }
+
+        public void ApplyStrategy(List<QuestionDataSet> sets, Func<QuestionDataSet, int> func)
+        {
+            int correctCount = 0;
+            foreach (var set in sets)
+            {
+                var result = func(set);
+                if (result == set.CasesData.Single(kvp => kvp.Value.IsCorrect.Value).Key)
+                    correctCount++;
+            }
+
+            Console.WriteLine($"Strategy: {func.Method.Name}");
+            Console.WriteLine($"{correctCount} correct out of {sets.Count}");
+            Console.WriteLine($"accuracy {(float)correctCount / (float) sets.Count * 100}%");
+            Console.WriteLine();
+        }
+
+        public int GuessByTimesMentionedAndTotalResultsFallback(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastMentioned().SelectByLeastResults().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostMentioned().SelectByMostResults().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByTimesMentionedAndTotalResultsInQuotesFallback(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastMentioned().SelectByLeastResultsWithQuotes().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostMentioned().SelectByMostResultsWithQuotes().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastMentioned().SelectByLeastResultsWithQuotes().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostMentioned().SelectByMostResults().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.SelectByLeastMentionedFuzzy().SelectByLeastResultsWithQuotes().First();
+            }
+            else
+            {
+                winner = set.SelectByMostMentionedFuzzy().SelectByMostResults().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByTotalResults(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastResults().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostResults().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByTotalResultsInQuotes(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastResultsWithQuotes().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostResultsWithQuotes().First();
+            }
+
+            return winner.Key;
+        }
     }
 }
