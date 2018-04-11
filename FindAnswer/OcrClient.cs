@@ -7,19 +7,27 @@ namespace FindAnswer
 {
     public static class OcrClient
     {
+        private static GoogleCredential credential = null;
+        private static Grpc.Core.Channel channel = null;
+        private static ImageAnnotatorClient client = null;
+
         public static string Recognize(string imagePath)
         {
-            var googleCredsPath = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? @"C:\mydev\My Project-77101559a6d3.json"
-                : "/Users/slav/Downloads/My Project-d1092d64586a.json";
+            if(credential == null)
+            {
+                var googleCredsPath = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? @"C:\mydev\My Project-77101559a6d3.json"
+                    : "/Users/slav/Downloads/My Project-d1092d64586a.json";
 
-            var credential = GoogleCredential.FromFile(googleCredsPath)
-                .CreateScoped(ImageAnnotatorClient.DefaultScopes);
-            var channel = new Grpc.Core.Channel(
-                ImageAnnotatorClient.DefaultEndpoint.ToString(),
-                credential.ToChannelCredentials());
+                credential = GoogleCredential.FromFile(googleCredsPath)
+                    .CreateScoped(ImageAnnotatorClient.DefaultScopes);
+                channel = new Grpc.Core.Channel(
+                    ImageAnnotatorClient.DefaultEndpoint.ToString(),
+                    credential.ToChannelCredentials());
             
-            var client = ImageAnnotatorClient.Create(channel);
+                var client = ImageAnnotatorClient.Create(channel);
+            }
+
             var image = Image.FromFile(imagePath);
             var response = client.DetectText(image);
             int count = response.Count;
