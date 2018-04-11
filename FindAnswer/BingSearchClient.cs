@@ -11,9 +11,26 @@ namespace FindAnswer
         const string BaseUri = "https://api.cognitive.microsoft.com/bing/v7.0/search";
         const string AccessKey = "51f488e4f9fc402b948d284653925471";
 
+        private readonly Dictionary<string, SearchResult> _resultsCache = new Dictionary<string, SearchResult>();
+
         public BingSearchClient()
         {
         }
+
+        public long TotalSearchResults(string query)
+        {
+            SearchResult result;
+            long totalResults = 0;
+
+            if (!_resultsCache.ContainsKey(query))
+            {
+                _resultsCache.Add(query, Search(query));
+            }
+
+            totalResults = (long)JObject.Parse(_resultsCache[query].jsonResult)["webPages"]["totalEstimatedMatches"];
+            return totalResults;
+        }
+
 
         public SearchResult Search(string query)
         {
@@ -30,16 +47,7 @@ namespace FindAnswer
             var searchResult = new SearchResult()
             {
                 jsonResult = json,
-                relevantHeaders = new Dictionary<String, String>(),
-                TotalResults = (long)JObject.Parse(json)["webPages"]["totalEstimatedMatches"]
             };
-
-            // Extract Bing HTTP headers
-            foreach (String header in response.Headers)
-            {
-                if (header.StartsWith("BingAPIs-") || header.StartsWith("X-MSEdge-"))
-                    searchResult.relevantHeaders[header] = response.Headers[header];
-            }
 
             return searchResult;
         }
@@ -47,8 +55,6 @@ namespace FindAnswer
         public struct SearchResult
         {
             public String jsonResult;
-            public Dictionary<String, String> relevantHeaders;
-            public long TotalResults;
         }
     }
 }
