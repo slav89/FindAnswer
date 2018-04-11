@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 
 namespace FindAnswer
 {
@@ -49,15 +47,7 @@ namespace FindAnswer
             var searchResult = new SearchResult()
             {
                 jsonResult = json,
-                relevantHeaders = new Dictionary<String, String>()
             };
-
-            // Extract Bing HTTP headers
-            foreach (String header in response.Headers)
-            {
-                if (header.StartsWith("BingAPIs-") || header.StartsWith("X-MSEdge-"))
-                    searchResult.relevantHeaders[header] = response.Headers[header];
-            }
 
             return searchResult;
         }
@@ -65,7 +55,6 @@ namespace FindAnswer
         public struct SearchResult
         {
             public String jsonResult;
-            public Dictionary<String, String> relevantHeaders;
         }
     }
 }
