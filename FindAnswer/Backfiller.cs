@@ -132,6 +132,19 @@ namespace FindAnswer
             ApplyStrategy(sets, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(sets, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(sets, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions = ApplyStrategy(sets, GuessByFuzzyTimesMentioned);
+            Console.WriteLine();
+
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("incorectbyFuzzymentions SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            ApplyStrategy(incorectbyFuzzymentions, GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(incorectbyFuzzymentions, GuessByTotalResults);
+            ApplyStrategy(incorectbyFuzzymentions, GuessByTotalResultsInQuotes);
+            ApplyStrategy(incorectbyFuzzymentions, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(incorectbyFuzzymentions, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(incorectbyFuzzymentions, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions1 = ApplyStrategy(incorectbyFuzzymentions, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -144,6 +157,7 @@ namespace FindAnswer
             ApplyStrategy(positiveSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(positiveSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(positiveSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions2 = ApplyStrategy(positiveSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -156,6 +170,7 @@ namespace FindAnswer
             ApplyStrategy(negativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(negativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(negativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions3 = ApplyStrategy(negativeSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -168,6 +183,7 @@ namespace FindAnswer
             ApplyStrategy(whichOfTheseSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(whichOfTheseSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(whichOfTheseSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions4 = ApplyStrategy(whichOfTheseSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -180,6 +196,7 @@ namespace FindAnswer
             ApplyStrategy(whichOfTheseNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(whichOfTheseNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(whichOfTheseNegativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions5 = ApplyStrategy(whichOfTheseNegativeSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -192,6 +209,7 @@ namespace FindAnswer
             ApplyStrategy(whichSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(whichSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(whichSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions6 = ApplyStrategy(whichSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -204,6 +222,7 @@ namespace FindAnswer
             ApplyStrategy(whichPositiveSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(whichPositiveSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(whichPositiveSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var incorectbyFuzzymentions7 = ApplyStrategy(whichPositiveSet, GuessByFuzzyTimesMentioned);
             Console.WriteLine();
 
             Console.WriteLine("______________________________________________________________");
@@ -216,25 +235,43 @@ namespace FindAnswer
             ApplyStrategy(whichNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(whichNegativeSet, GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(whichNegativeSet, GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
-
+            var incorectbyFuzzymentions8 = ApplyStrategy(whichNegativeSet, GuessByFuzzyTimesMentioned);
             Console.ReadKey();
         }
 
-        public void ApplyStrategy(List<QuestionDataSet> sets, Func<QuestionDataSet, int> func)
+        public Dictionary<string, List<QuestionDataSet>> ApplyStrategy(List<QuestionDataSet> sets,
+            Func<QuestionDataSet, int> func)
         {
             int correctCount = 0;
+            int notSure = 0;
+            var incorrect = new List<QuestionDataSet>();
+            var notSureSets = new List<QuestionDataSet>();
             foreach (var set in sets)
             {
                 var result = func(set);
                 if (result == set.CasesData.Single(kvp => kvp.Value.IsCorrect.Value).Key)
                     correctCount++;
+                else if (result != 0)
+                    incorrect.Add(set);
+                else
+                    notSureSets.Add(set);
+                notSure++;
             }
 
             Console.WriteLine($"Strategy: {func.Method.Name}");
-            Console.WriteLine($"{correctCount} correct out of {sets.Count}");
-            Console.WriteLine($"accuracy {(float)correctCount / (float) sets.Count * 100}%");
+            Console.WriteLine($"{correctCount} correct out of {sets.Count} total");
+            Console.WriteLine($"{notSure} not sure out of {sets.Count}");
+            Console.WriteLine($"Total accuracy {(float) correctCount / (float) sets.Count * 100}%");
+            Console.WriteLine(
+                $"Sure accuracy {(float) correctCount / (float) (incorrect.Count + correctCount) * 100}%");
             Console.WriteLine();
-        }
+
+            var resuy
+            return new Dictionary<string, List<QuestionDataSet>> {{"incorrect", incorrect}}, {
+                "notsure", notSureSets
+            }
+        };
+    }
 
         public int GuessByTimesMentionedAndTotalResultsFallback(QuestionDataSet set)
         {
@@ -279,6 +316,26 @@ namespace FindAnswer
             else
             {
                 winner = set.CasesData.SelectByMostMentioned().SelectByMostResults().First();
+            }
+
+            return winner.Key;
+        }
+
+        public int GuessByFuzzyTimesMentioned(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                var winners = set.SelectByLeastMentionedFuzzy();
+                if (winners.Count == 1)
+                    winner = winners.Single();
+            }
+            else
+            {
+                var winners = set.SelectByMostMentionedFuzzy();
+                if (winners.Count == 1)
+                    winner = winners.Single();
             }
 
             return winner.Key;

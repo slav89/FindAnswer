@@ -1,0 +1,10 @@
+diff a/FindAnswer/BingSearchClient.cs b/FindAnswer/BingSearchClient.cs	(rejected hunks)
+@@ -55,7 +55,6 @@
+         public struct SearchResult
+         {
+             public String jsonResult;
+-            public long TotalResults;
+         }
+     }
+ }
+\ No newline at end of file

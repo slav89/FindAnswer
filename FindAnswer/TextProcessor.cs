@@ -6,7 +6,7 @@ namespace FindAnswer
 {
     class TextProcessor
     {
-        public static string normalize(string orig)
+        public static string Normalize(string orig)
         {
             string result = orig.ToLowerInvariant();
             var strs = new string[]
@@ -16,8 +16,8 @@ namespace FindAnswer
                 "‘", "’", "“", "”",
                 ",", "،", "、",
                     "‹", "›", "«", "»",
-                    "&", "′", "″", "‴"
-//                "é", "ɑ"
+                    "&", "′", "″", "‴", ".", "(", ")", "-", ":", ";", "!", "?", "[", "]", "/", "<", ">",
+                "!", "%", "$", "@", "^", "*", "_", "=", "&"
             };
             foreach (var str in strs)
             {
@@ -29,11 +29,12 @@ namespace FindAnswer
 
         public static int FindNumberOfAnswersInString(string textToSearch, string textToSearchFor, int fuzzyness = 0)
         {
-            textToSearch = normalize(textToSearch);
+            textToSearch = Normalize(textToSearch);
 
-            textToSearchFor = normalize(textToSearchFor);
+            textToSearchFor = Normalize(textToSearchFor) + " ";
 
-            int foundIndex = FuzzySearch(textToSearch, textToSearchFor, fuzzyness);
+//                        int foundIndex = FuzzySearch(textToSearch, textToSearchFor, fuzzyness);
+            int foundIndex = textToSearch.IndexOf(textToSearchFor);
             int foundResults = 0;
             while (foundIndex != -1)
             {
@@ -41,7 +42,8 @@ namespace FindAnswer
                 try
                 {
                     textToSearch = textToSearch.Substring(foundIndex + textToSearchFor.Length);
-                    foundIndex = FuzzySearch(textToSearch, textToSearchFor, fuzzyness);
+//                                        foundIndex = FuzzySearch(textToSearch, textToSearchFor, fuzzyness);
+                    foundIndex = textToSearch.IndexOf(textToSearchFor);
                 }
                 catch
                 {
