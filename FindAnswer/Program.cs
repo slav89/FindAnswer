@@ -7,25 +7,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using BingAndTwitterExample;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace FindAnswer
 {
     class Program
     {
+        private static string ScreensPath => System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? @"C:\mydev\screens\hq\live"
+            : @"/Users/slav/Desktop/platform-tools/screens/hq/live";
+
+        private static string ChromeDriverPath => System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? AppDomain.CurrentDomain.BaseDirectory
+            : @"/Users/slav/FindAnswer/FindAnswer/bin/Debug/netcoreapp2.0/";
+
+
+        protected static ChromeDriver WebSearchBrowser;
+        protected static ChromeDriver ImageSearchBrowser;
+
         static void Main(string[] args)
         {
-            //TestParsing();
+//            TestParsing();
 //            TestGuessing(100);
-//            return;
+                        var backfiller = new Backfiller();
+//                        backfiller.Backfill();
+                        backfiller.Explore();
+                        return;
+            WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
+            ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 
             int i = 0;
             while (true)
             {
-                var screensPath = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? @"C:\mydev\screens\hq\live"
-                    : @"/Users/slav/Desktop/platform-tools/screens/hq/live";
-
-                DirectoryInfo d = new DirectoryInfo(screensPath);
+                DirectoryInfo d = new DirectoryInfo(ScreensPath);
                 FileInfo[] files = d.GetFiles("*.png"); 
 
                 if (files.Length == 1)
@@ -48,25 +63,10 @@ namespace FindAnswer
             }
         }
 
-        private static void TestGuessing(int count)
-        {
-            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
-            var questionsAndAnswersSet = allQuestionsAndAnswers.Take(count).ToList();
-
-            var countCorrect = 0;
-            foreach (var q in questionsAndAnswersSet)
-            {
-               var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
-                if (result.StartsWith(q.CorrectAnswer.ToString()))
-                countCorrect++;
-            }
-            Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
-            Console.ReadKey();
-        }
-
         private static void ProcessScreenshot(int i, string fileName){
             string text = null;
             var success = false;
+            int count = 0;
             while (!success)
             {
                 try
@@ -76,16 +76,20 @@ namespace FindAnswer
                 }
                 catch (Exception)
                 {
+                    if (count == 30) throw;
                     Thread.Sleep(100);
+                    count++;
                 }
             }
-            var qa = new QuestionSplitter(text);
+            var questionSplitter = new QuestionSplitter(text);
 
-            var question = qa.GetQuestion();
+            var question = questionSplitter.GetQuestion();
+            Task.Run(() => WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
+            Task.Run(() => ImageSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?tbm=isch&q=" + question));
 
-            var a = qa.GetCaseA();
-            var b = qa.GetCaseB();
-            var c = qa.GetCaseC();
+            var a = questionSplitter.GetCaseA();
+            var b = questionSplitter.GetCaseB();
+            var c = questionSplitter.GetCaseC();
 
             Console.WriteLine(i + ". " + question + "?");
             var winnerString = FigureOutRightAnswer(question, a, b, c);
@@ -95,13 +99,13 @@ namespace FindAnswer
 
         static string FigureOutRightAnswer(string question, string a, string b, string c)
         {
-            var questionForQuery = question;
+            var questionForQuery = question.ToLower();
 
             var negative = false;
             if (question.ToLower().Contains(" not "))
             {
                 negative = true;
-                questionForQuery = question.Replace("not", "");
+                questionForQuery = questionForQuery.Replace(" not ", " ");
             }
 
             //quotes around cases - all words in case should be present
@@ -110,9 +114,9 @@ namespace FindAnswer
             var queryC = $"{questionForQuery} \"{c}\"";
 
             //no quotes
-            //var queryA = $"{questionForQuery} {a}";
-            //var queryB = $"{questionForQuery} {b}";
-            //var queryC = $"{questionForQuery} {c}";
+//            var queryA = $"{questionForQuery} {a}";
+//            var queryB = $"{questionForQuery} {b}";
+//            var queryC = $"{questionForQuery} {c}";
 
 //            var searchClient = new GoogleSearchClient();
 //
@@ -125,9 +129,9 @@ namespace FindAnswer
             var searchClient = new BingSearchClient();
 
             var taskD = Task.Run<Answer>(() => AnswerFinder.FindAnswer(question, a, b, c));
-            var taskA = Task.Run<long>(() => searchClient.TotalSearchResults(queryA));
-            var taskB = Task.Run<long>(() => searchClient.TotalSearchResults(queryB));
-            var taskC = Task.Run<long>(() => searchClient.TotalSearchResults(queryC));
+            var taskA = Task.Run<long>(() => searchClient.Search(queryA).TotalResults);
+            var taskB = Task.Run<long>(() => searchClient.Search(queryB).TotalResults);
+            var taskC = Task.Run<long>(() => searchClient.Search(queryC).TotalResults);
 
             var results = new Dictionary<string, long>();
             results.Add($"1. {a}", taskA.Result);
@@ -157,11 +161,6 @@ namespace FindAnswer
             var winnerString = winner.Key;
 
             return winnerString;
-
-            //For testing
-            //Console.WriteLine(a);
-            //Console.WriteLine(b);
-            //Console.WriteLine(c)
         }
 
         static void TestParsing()
@@ -189,6 +188,22 @@ namespace FindAnswer
                 Console.WriteLine($"C. {c}");
                 Console.WriteLine();
             }
-        }       
+        }  
+
+        private static void TestGuessing(int count)
+        {
+            var allQuestionsAndAnswers = TwitterParser.ParseQuestionsAndAnswerses();
+            var questionsAndAnswersSet = allQuestionsAndAnswers.Take(count).ToList();
+
+            var countCorrect = 0;
+            foreach (var q in questionsAndAnswersSet)
+            {
+                var result = FigureOutRightAnswer(q.Question, q.Answer1, q.Answer2, q.Answer3);
+                if (result.StartsWith(q.CorrectAnswer.ToString()))
+                    countCorrect++;
+            }
+            Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
+            Console.ReadKey();
+        }
     }
 }

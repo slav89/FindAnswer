@@ -63,8 +63,14 @@ namespace BingAndTwitterExample
 //            Console.OutputEncoding = Encoding.UTF8;
             
 //            Console.WriteLine("Searching the Web for: " + question);
+            bool negative = false;
+            question = question.ToLower();
 
-            SearchResult result = BingWebSearch(question);
+            negative = question.Contains(" not ") || question.Contains(" isn't ") || question.Contains(" doesn't ") ||
+                       question.Contains(" never ");
+            var questionForQuery = question.Replace(" not ", " ").Replace(" never ", " ").Replace(" doesn't ", "");
+
+                SearchResult result = BingWebSearch(questionForQuery);
 
 //            Console.WriteLine("\nJSON Response:\n");
 //            Console.WriteLine(JsonPrettyPrint(result.jsonResult));
@@ -75,7 +81,7 @@ namespace BingAndTwitterExample
 
             int totalResultsFound = resultsCountFor1 + resultsCountFor2 + resultsCountFor3;
 
-            if (question.Contains(" not ") || question.Contains(" isn't ") || question.Contains(" doesn't ") || question.Contains(" never "))
+            if (negative)
             {
                 int minOf1And2 = Math.Min(resultsCountFor1, resultsCountFor2);
                 int minNumberOfMatches = Math.Min(minOf1And2, resultsCountFor3);
