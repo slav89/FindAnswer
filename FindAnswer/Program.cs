@@ -28,12 +28,12 @@ namespace FindAnswer
 
         static void Main(string[] args)
         {
-//            TestParsing();
+            //TestParsing();
 //            TestGuessing(100);
-                        var backfiller = new Backfiller();
-//                        backfiller.Backfill();
-                        backfiller.Explore();
-                        return;
+                        //var backfiller = new Backfiller();
+                        //backfiller.Backfill();
+                        //backfiller.Explore();
+                        //return;
             WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
             ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 
@@ -49,13 +49,14 @@ namespace FindAnswer
                     {
                         var then = DateTime.Now;
                         ProcessScreenshot(i, files[0].FullName);
-                        var took = (DateTime.Now - then).TotalMilliseconds;
-                        //Console.WriteLine(took);
+                        //var took = (DateTime.Now - then).TotalMilliseconds;
+                        Console.WriteLine();
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine($"{i}. Crashed");
                         Console.WriteLine(e.Message);
+                        Console.WriteLine();
                     }
                     File.Delete(files[0].FullName);
                     i++;
@@ -92,9 +93,49 @@ namespace FindAnswer
             var c = questionSplitter.GetCaseC();
 
             Console.WriteLine(i + ". " + question + "?");
-            var winnerString = FigureOutRightAnswer(question, a, b, c);
-            Console.WriteLine(winnerString);
-            Console.WriteLine();
+
+            var builder = new QuestionDataSetBuilder();
+            var questionDataSet = builder.Build(question, a, b, c);
+
+            //var winnerString = FigureOutRightAnswer(question, a, b, c);
+            var winnerString = FigureOutRightAnswer(questionDataSet);
+        }
+
+        static string FigureOutRightAnswer(QuestionDataSet questionDataSet)
+        {
+            var guess = Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(questionDataSet);
+
+            string winner = "";
+            string winnerLetter = "";
+
+            if (guess.Answer == 1)
+            {
+                winner = questionDataSet.CasesData[1].Case;
+                winnerLetter = "A.";
+            }
+            else if (guess.Answer == 2)
+            {
+                winner = questionDataSet.CasesData[2].Case;
+                winnerLetter = "B.";
+            }
+            else if (guess.Answer == 3)
+            {
+                winner = questionDataSet.CasesData[3].Case;
+                winnerLetter = "C.";
+            }
+
+            var winnerString = $"{winnerLetter} {winner}";
+            var confidenceString = $"  CONFIDENCE: {guess.Confidence}%";
+
+            Console.Write(winnerString);
+            if (guess.Confidence < 50)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+
+            Console.WriteLine(confidenceString);
+            Console.ResetColor();
+            return winnerString;
         }
 
         static string FigureOutRightAnswer(string question, string a, string b, string c)

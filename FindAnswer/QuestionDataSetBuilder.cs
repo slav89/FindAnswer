@@ -9,9 +9,22 @@ namespace FindAnswer
     {
         public QuestionDataSet Build(QuestionAndAnswers qa)
         {
+            var question = qa.Question;
+            var a = qa.Answer1;
+            var b = qa.Answer2;
+            var c = qa.Answer3;
+            var set =  Build(question, a, b, c);
+            set.Id = qa.Id;
+            set.CasesData[1].IsCorrect = qa.CorrectAnswer == 1;
+            set.CasesData[2].IsCorrect = qa.CorrectAnswer == 2;
+            set.CasesData[3].IsCorrect = qa.CorrectAnswer == 3;
+            return set;
+        }
+
+        public QuestionDataSet Build(string question, string a, string b, string c)
+        {
             var client = new BingSearchClient();
 
-            var question = qa.Question;
             var questionForQuery = question.ToLower();
 
             var negative = false;
@@ -23,14 +36,14 @@ namespace FindAnswer
 
             var searchQuestionTask = Task.Run<SearchResult>(() => client.Search(questionForQuery));
 
-            var aCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer1}"));
-            var aCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer1}\""));
+            var aCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {a}"));
+            var aCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{a}\""));
 
-            var bCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer2}"));
-            var bCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer2}\""));
+            var bCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {b}"));
+            var bCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{b}\""));
 
-            var cCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {qa.Answer3}"));
-            var cCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{qa.Answer3}\""));
+            var cCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {c}"));
+            var cCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{c}\""));
 
 
             var questionData = new QuestionData
@@ -46,32 +59,28 @@ namespace FindAnswer
 
             casesData.Add(1, new CaseData
             {
-                Case = qa.Answer1,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer1),
+                Case = a,
+                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, a),
                 SearchResultWithQuestionPrepended = aCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = aCaseAppendedInQuotesTask.Result,
-                IsCorrect = qa.CorrectAnswer == 1
             });
             casesData.Add(2, new CaseData
             {
-                Case = qa.Answer2,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer2),
+                Case = b,
+                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, b),
                 SearchResultWithQuestionPrepended = bCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = bCaseAppendedInQuotesTask.Result,
-                IsCorrect = qa.CorrectAnswer == 2
             });
             casesData.Add(3, new CaseData
             {
-                Case = qa.Answer3,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, qa.Answer3),
+                Case = c,
+                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, c),
                 SearchResultWithQuestionPrepended = cCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = cCaseAppendedInQuotesTask.Result,
-                IsCorrect = qa.CorrectAnswer == 3
             });
 
             var questionDataSet = new QuestionDataSet
             {
-                Id = qa.Id,
                 QuestionData = questionData,
                 CasesData = casesData
             };
