@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using Console = System.Console;
+using File = System.IO.File;
+using StringReader = System.IO.StringReader;
+using System.Configuration;
+
 
 namespace FindAnswer
 {
@@ -54,21 +59,58 @@ namespace FindAnswer
             ApplyStrategy(sets, Strategies.GuessByTotalResultsInQuotes);
             ApplyStrategy(sets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesFallback);
             ApplyStrategy(sets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
-            //ApplyStrategy(sets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(sets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             var fuzzyMentionsResults = ApplyStrategy(sets, Strategies.GuessByFuzzyTimesMentioned);
             Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("fuzzyMentions UNSURE POSITIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            Console.ResetColor();
+            var wholePositiveSets = fuzzyMentionsResults.NotSure.Where(set => !set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTotalResults);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTotalResultsInQuotes);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var wholePositivefuzzyMentionsResults = ApplyStrategy(wholePositiveSets, Strategies.GuessByFuzzyTimesMentioned);
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("______________________________________________________________");
+            Console.WriteLine("fuzzyMentions UNSURE NEGATIVE SET");
+            Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+            Console.ResetColor();
+            var wholeNegativeSets = fuzzyMentionsResults.NotSure.Where(set => set.QuestionData.Attributes.Contains("negative")).ToList();
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTotalResults);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTotalResultsInQuotes);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var wholeNegativeFuzzyMentionsResults = ApplyStrategy(wholeNegativeSets, Strategies.GuessByFuzzyTimesMentioned);
+            Console.WriteLine();
+
+
+
+
+
+
+
 
             var currentTestSet = fuzzyMentionsResults.Incorrect;
             Console.ReadKey();
         }
 
         public StrategyResults ApplyStrategy(List<QuestionDataSet> sets,
-            Func<QuestionDataSet, int> func)
+            Func<QuestionDataSet, Strategies.Guess> func)
         {
             var results = new StrategyResults();
             foreach (var set in sets)
             {
-                var guess = func(set);
+                var guess = func(set).Answer;
                 if (guess == set.CasesData.Single(kvp => kvp.Value.IsCorrect.Value).Key)
                     results.Correct.Add(set);
                 else if (guess == 0)

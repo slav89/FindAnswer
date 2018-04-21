@@ -11,6 +11,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Selenium.WebDriver" Version="3.11.1" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="2.37.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0-preview2-26406-04" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BingAndTwitterExample\BingAndTwitterExample.csproj" />

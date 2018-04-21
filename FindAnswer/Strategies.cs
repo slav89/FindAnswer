@@ -7,7 +7,7 @@ namespace FindAnswer
     public static class Strategies
     {
 
-        public static int GuessByTimesMentionedAndTotalResultsFallback(QuestionDataSet set)
+        public static Guess GuessByTimesMentionedAndTotalResultsFallback(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -20,10 +20,13 @@ namespace FindAnswer
                 winner = set.CasesData.SelectByMostMentioned().SelectByMostResults().First();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
-        public static int GuessByTimesMentionedAndTotalResultsInQuotesFallback(QuestionDataSet set)
+        public static Guess GuessByTimesMentionedAndTotalResultsInQuotesFallback(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -36,10 +39,13 @@ namespace FindAnswer
                 winner = set.CasesData.SelectByMostMentioned().SelectByMostResultsWithQuotes().First();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
-        public static int GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(QuestionDataSet set)
+        public static Guess GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -52,10 +58,13 @@ namespace FindAnswer
                 winner = set.CasesData.SelectByMostMentioned().SelectByMostResults().First();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
-        public static int GuessByFuzzyTimesMentioned(QuestionDataSet set)
+        public static Guess GuessByFuzzyTimesMentioned(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -72,13 +81,16 @@ namespace FindAnswer
                     winner = winners.Single();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
         public static Guess GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
-            int confidence = 0;
+            int confidence;
 
             if (set.QuestionData.Attributes.Contains("negative"))
             {
@@ -91,7 +103,7 @@ namespace FindAnswer
                 else 
                 {
                     winner = byMentions.SelectByLeastResultsWithQuotes().First();
-                    confidence = 45;
+                    confidence = 47;
                 }
                     
             }
@@ -106,7 +118,7 @@ namespace FindAnswer
                 else
                 {
                     winner = byMentions.SelectByMostResultsWithQuotes().First();
-                    confidence = 33;
+                    confidence = 38;
                 }
             }
             return new Guess
@@ -116,7 +128,7 @@ namespace FindAnswer
             };
         }
 
-        public static int GuessByTotalResults(QuestionDataSet set)
+        public static Guess GuessByTotalResults(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -129,10 +141,13 @@ namespace FindAnswer
                 winner = set.CasesData.SelectByMostResults().First();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
-        public static int GuessByTotalResultsInQuotes(QuestionDataSet set)
+        public static Guess GuessByTotalResultsInQuotes(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;
 
@@ -145,7 +160,10 @@ namespace FindAnswer
                 winner = set.CasesData.SelectByMostResultsWithQuotes().First();
             }
 
-            return winner.Key;
+            return new Guess
+            {
+                Answer = winner.Key
+            };
         }
 
         public class Guess

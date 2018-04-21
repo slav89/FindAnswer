@@ -24,6 +24,7 @@ namespace FindAnswer
         public QuestionDataSet Build(string question, string a, string b, string c)
         {
             var client = new BingSearchClient();
+            var googleClient = new GoogleSearchClient();
 
             var questionForQuery = question.ToLower();
 
@@ -34,7 +35,7 @@ namespace FindAnswer
                 questionForQuery = questionForQuery.Replace("not ", "").Replace("never ", "");
             }
 
-            var searchQuestionTask = Task.Run<SearchResult>(() => client.Search(questionForQuery));
+            var searchQuestionTask = Task.Run<SearchResult>(() => googleClient.Search(questionForQuery));
 
             var aCaseAppendedTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} {a}"));
             var aCaseAppendedInQuotesTask = Task.Run<SearchResult>(() => client.Search($"{questionForQuery} \"{a}\""));
@@ -60,21 +61,21 @@ namespace FindAnswer
             casesData.Add(1, new CaseData
             {
                 Case = a,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, a),
+//                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, a),
                 SearchResultWithQuestionPrepended = aCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = aCaseAppendedInQuotesTask.Result,
             });
             casesData.Add(2, new CaseData
             {
                 Case = b,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, b),
+//                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, b),
                 SearchResultWithQuestionPrepended = bCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = bCaseAppendedInQuotesTask.Result,
             });
             casesData.Add(3, new CaseData
             {
                 Case = c,
-                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, c),
+//                TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(questionData.SearchResult.jsonResult, c),
                 SearchResultWithQuestionPrepended = cCaseAppendedTask.Result,
                 SearchResultWithQuestionPrependedAndCaseInQuotes = cCaseAppendedInQuotesTask.Result,
             });

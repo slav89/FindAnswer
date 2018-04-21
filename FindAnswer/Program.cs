@@ -28,12 +28,15 @@ namespace FindAnswer
 
         static void Main(string[] args)
         {
+//            var psc = new PastShowsApiClient();
+//            psc.GetTodaysShow();
             //TestParsing();
 //            TestGuessing(100);
-                        //var backfiller = new Backfiller();
-                        //backfiller.Backfill();
-                        //backfiller.Explore();
+//                        var analyzer = new Analyzer();
+            //backfiller.Backfill();
+//            analyzer.Explore();
                         //return;
+
             WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
             ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 
@@ -49,7 +52,7 @@ namespace FindAnswer
                     {
                         var then = DateTime.Now;
                         ProcessScreenshot(i, files[0].FullName);
-                        //var took = (DateTime.Now - then).TotalMilliseconds;
+                        var took = (DateTime.Now - then).TotalMilliseconds;
                         Console.WriteLine();
                     }
                     catch (Exception e)

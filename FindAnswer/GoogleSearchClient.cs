@@ -14,7 +14,7 @@ namespace FindAnswer
         {
         }
 
-        public long RunSearch(string query)
+        public BingSearchClient.SearchResult Search(string query)
         {
             var searchUri = _baseUri + query;
             var client = new RestClient(searchUri);
@@ -22,10 +22,17 @@ namespace FindAnswer
 
             var result = client.Execute(request);
             var content = JObject.Parse(result.Content);
+
             var searchInfo = content["searchInformation"];
             var totalResults = (long)searchInfo["totalResults"];
 
-            return totalResults;
+            // Create result object for return
+            var searchResult = new BingSearchClient.SearchResult()
+            {
+                jsonResult = result.Content,
+                TotalResults = totalResults
+            };
+            return searchResult;
         }
 
         public long RunRegularSearch(string query)
