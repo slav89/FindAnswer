@@ -19,13 +19,15 @@ namespace FindAnswer
         public string Question { get; set; }
         public string QuestionForQuery { get; set; }
         public SearchResult SearchResult { get; set; }
-        public SearchResult SearchResultWithModifiedQuery { get; set; }
+        public SearchResult GoogleSearchResult { get; set; }
         public List<string> Attributes { get; set; }
     }
 
     public class CaseData
     {
         public string Case { get; set; }
+        public SearchResult SearchResult { get; set; }
+        public SearchResult SearchResultInQuotes { get; set; }
         public SearchResult SearchResultWithQuestionPrepended { get; set; }
         public SearchResult SearchResultWithQuestionPrependedAndCaseInQuotes { get; set; }
         public int TimesMentionedInQuestionSearchResult { get; set; }

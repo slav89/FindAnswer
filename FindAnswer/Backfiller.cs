@@ -7,12 +7,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using BingAndTwitterExample;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimpleJson;
+using static FindAnswer.BingSearchClient;
 
 namespace FindAnswer
 {
@@ -43,6 +45,57 @@ namespace FindAnswer
                     Thread.Sleep(500); 
                 }
             });
+        }
+
+        public void ReBackfill(List<QuestionDataSet> sets)
+        {
+            sets.ForEach(set =>
+            {
+                if (set.CasesData[3].SearchResultInQuotes == null)
+                {
+                    EnhanceCasesWithPlainSearchResultsAsync(set);
+                    var json = JsonConvert.SerializeObject(set, Formatting.Indented);
+                    File.WriteAllText($"{BackfilledDataPath}{set.Id}.json", json);
+                    Thread.Sleep(200);
+                }
+            });
+        }
+
+        public void EnhanceCasesWithPlainSearchResultsAsync(QuestionDataSet qds)
+        {
+            var client = new BingSearchClient();
+            var googleClient = new GoogleSearchClient();
+
+            var a = qds.CasesData[1].Case;
+            var b = qds.CasesData[2].Case;
+            var c = qds.CasesData[3].Case;
+
+            //var aCaseTask = Task.Run<SearchResult>(() => client.Search(a));
+            //Thread.Sleep(100);
+            //var aCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{a}\""));
+            //Thread.Sleep(100);
+
+            //var bCaseTask = Task.Run<SearchResult>(() => client.Search(b));
+            //Thread.Sleep(100);
+            //var bCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{b}\""));
+            //Thread.Sleep(100);
+
+            //var cCaseTask = Task.Run<SearchResult>(() => client.Search(c));
+            //Thread.Sleep(100);
+            //var cCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{c}\""));
+            //Thread.Sleep(100);
+
+
+            qds.CasesData[1].SearchResult = client.Search(a);
+            qds.CasesData[1].SearchResultInQuotes = client.Search($"\"{a}\"");
+
+            qds.CasesData[2].SearchResult = client.Search(b);
+            qds.CasesData[2].SearchResultInQuotes = client.Search($"\"{b}\"");
+
+            qds.CasesData[3].SearchResult = client.Search(c);
+            qds.CasesData[3].SearchResultInQuotes = client.Search($"\"{c}\"");
+                
+
         }
 
         sealed class QaMap : ClassMap<QuestionAndAnswers>

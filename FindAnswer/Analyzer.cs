@@ -33,9 +33,9 @@ namespace FindAnswer
         {
             //Console.BufferHeight = 2000;
             var sets = LoadQuestionDataSets();
-            var subsets = sets.OrderByDescending(set => set.Id).Take(12).ToList();
-            var isnt = sets.Where(set => set.QuestionData.Question.Contains("isn")).ToList();
-            var regex = new System.Text.RegularExpressions.Regex(" the.*st ");
+            //var subsets = sets.OrderByDescending(set => set.Id).Take(12).ToList();
+            //var isnt = sets.Where(set => set.QuestionData.Question.Contains("isn")).ToList();
+            //var regex = new System.Text.RegularExpressions.Regex(" the.*st ");
             //sets = sets.Where(set =>
             //                    !set.QuestionData.Question.Contains("first")
             //                    && !set.QuestionData.Question.Contains("last")

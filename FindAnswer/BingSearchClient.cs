@@ -53,7 +53,7 @@ namespace FindAnswer
             return searchResult;
         }
 
-        public struct SearchResult
+        public class SearchResult
         {
             public String jsonResult;
             public long TotalResults;
