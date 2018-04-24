@@ -147,6 +147,25 @@ namespace FindAnswer
             };
         }
 
+        public static Guess GuessByTotalWeightedResults(QuestionDataSet set)
+        {
+            KeyValuePair<int, CaseData> winner;
+
+            if (set.QuestionData.Attributes.Contains("negative"))
+            {
+                winner = set.CasesData.SelectByLeastWeightedResults().First();
+            }
+            else
+            {
+                winner = set.CasesData.SelectByMostWeightedResults().First();
+            }
+
+            return new Guess
+            {
+                Answer = winner.Key
+            };
+        }
+
         public static Guess GuessByTotalResultsInQuotes(QuestionDataSet set)
         {
             KeyValuePair<int, CaseData> winner;

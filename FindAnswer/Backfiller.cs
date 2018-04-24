@@ -49,16 +49,26 @@ namespace FindAnswer
 
         public void ReBackfill(List<QuestionDataSet> sets)
         {
+            var failed = new List<string>();
             sets.ForEach(set =>
             {
                 if (set.CasesData[3].SearchResultInQuotes == null)
                 {
-                    EnhanceCasesWithPlainSearchResultsAsync(set);
-                    var json = JsonConvert.SerializeObject(set, Formatting.Indented);
-                    File.WriteAllText($"{BackfilledDataPath}{set.Id}.json", json);
-                    Thread.Sleep(200);
+                    try
+                    {
+                        EnhanceCasesWithPlainSearchResultsAsync(set);
+                        var json = JsonConvert.SerializeObject(set, Formatting.Indented);
+                        File.WriteAllText($"{BackfilledDataPath}{set.Id}.json", json);
+                        Thread.Sleep(200);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(set.Id);
+                        failed.Add(set.Id.ToString());
+                    }
                 }
             });
+            Console.ReadKey();
         }
 
         public void EnhanceCasesWithPlainSearchResultsAsync(QuestionDataSet qds)
@@ -70,31 +80,39 @@ namespace FindAnswer
             var b = qds.CasesData[2].Case;
             var c = qds.CasesData[3].Case;
 
-            //var aCaseTask = Task.Run<SearchResult>(() => client.Search(a));
-            //Thread.Sleep(100);
-            //var aCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{a}\""));
-            //Thread.Sleep(100);
+            var aCaseTask = Task.Run<SearchResult>(() => client.Search(a));
+//            Thread.Sleep(100);
+            var aCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{a}\""));
+//            Thread.Sleep(100);
 
-            //var bCaseTask = Task.Run<SearchResult>(() => client.Search(b));
-            //Thread.Sleep(100);
-            //var bCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{b}\""));
-            //Thread.Sleep(100);
+            var bCaseTask = Task.Run<SearchResult>(() => client.Search(b));
+//            Thread.Sleep(100);
+            var bCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{b}\""));
+//            Thread.Sleep(100);
 
-            //var cCaseTask = Task.Run<SearchResult>(() => client.Search(c));
-            //Thread.Sleep(100);
-            //var cCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{c}\""));
-            //Thread.Sleep(100);
+            var cCaseTask = Task.Run<SearchResult>(() => client.Search(c));
+//            Thread.Sleep(100);
+            var cCaseInQuotesTask = Task.Run<SearchResult>(() => client.Search($"\"{c}\""));
+//            Thread.Sleep(100);
 
+            qds.CasesData[1].SearchResult = aCaseTask.Result;
+            qds.CasesData[1].SearchResultInQuotes = aCaseInQuotesTask.Result;
 
-            qds.CasesData[1].SearchResult = client.Search(a);
-            qds.CasesData[1].SearchResultInQuotes = client.Search($"\"{a}\"");
+            qds.CasesData[2].SearchResult = bCaseTask.Result;
+            qds.CasesData[2].SearchResultInQuotes = bCaseInQuotesTask.Result;
 
-            qds.CasesData[2].SearchResult = client.Search(b);
-            qds.CasesData[2].SearchResultInQuotes = client.Search($"\"{b}\"");
+            qds.CasesData[3].SearchResult = cCaseTask.Result;
+            qds.CasesData[3].SearchResultInQuotes = cCaseInQuotesTask.Result;
 
-            qds.CasesData[3].SearchResult = client.Search(c);
-            qds.CasesData[3].SearchResultInQuotes = client.Search($"\"{c}\"");
-                
+            //            qds.CasesData[1].SearchResult = client.Search(a);
+            //            qds.CasesData[1].SearchResultInQuotes = client.Search($"\"{a}\"");
+            //
+            //            qds.CasesData[2].SearchResult = client.Search(b);
+            //            qds.CasesData[2].SearchResultInQuotes = client.Search($"\"{b}\"");
+            //
+            //            qds.CasesData[3].SearchResult = client.Search(c);
+            //            qds.CasesData[3].SearchResultInQuotes = client.Search($"\"{c}\"");
+
 
         }
 
