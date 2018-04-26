@@ -13,6 +13,21 @@ namespace FindAnswer
 {
     public class Analyzer
     {
+        readonly List<long> _failedToRebackfill = new List<long>
+        {
+            960605251396145152,
+            971116418312953856,
+            971931030876839936,
+            972656202579619840,
+            973274675974410240,
+            973366052221607937,
+            975541158737739776,
+            975811739710361600,
+            975901495827853312,
+            978709556997120000,
+            979434757003120640
+        };
+
         public Analyzer()
         {
         }
@@ -33,6 +48,7 @@ namespace FindAnswer
         {
             //Console.BufferHeight = 2000;
             var sets = LoadQuestionDataSets();
+            var rebackfilledSets = sets.Where(set => !_failedToRebackfill.Contains(set.Id)).ToList();
             //var subsets = sets.OrderByDescending(set => set.Id).Take(12).ToList();
             //var isnt = sets.Where(set => set.QuestionData.Question.Contains("isn")).ToList();
             //var regex = new System.Text.RegularExpressions.Regex(" the.*st ");
@@ -54,13 +70,14 @@ namespace FindAnswer
             Console.WriteLine("WHOLE SET");
             Console.WriteLine("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
             Console.ResetColor();
-            ApplyStrategy(sets, Strategies.GuessByTimesMentionedAndTotalResultsFallback);
-            ApplyStrategy(sets, Strategies.GuessByTotalResults);
-            ApplyStrategy(sets, Strategies.GuessByTotalResultsInQuotes);
-            ApplyStrategy(sets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesFallback);
-            ApplyStrategy(sets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
-            ApplyStrategy(sets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
-            var fuzzyMentionsResults = ApplyStrategy(sets, Strategies.GuessByFuzzyTimesMentioned);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTimesMentionedAndTotalResultsFallback);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTotalResults);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTotalResultsInQuotes);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesFallback);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
+            var fuzzyMentionsResults = ApplyStrategy(rebackfilledSets, Strategies.GuessByFuzzyTimesMentioned);
+            ApplyStrategy(rebackfilledSets, Strategies.GuessByTotalWeightedResults);
             Console.WriteLine();
 
             Console.ForegroundColor = ConsoleColor.Green;
@@ -76,6 +93,7 @@ namespace FindAnswer
             ApplyStrategy(wholePositiveSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(wholePositiveSets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             var wholePositivefuzzyMentionsResults = ApplyStrategy(wholePositiveSets, Strategies.GuessByFuzzyTimesMentioned);
+            ApplyStrategy(wholePositiveSets, Strategies.GuessByTotalWeightedResults);
             Console.WriteLine();
 
             Console.ForegroundColor = ConsoleColor.Green;
@@ -91,13 +109,8 @@ namespace FindAnswer
             ApplyStrategy(wholeNegativeSets, Strategies.GuessByTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             ApplyStrategy(wholeNegativeSets, Strategies.GuessByFuzzyTimesMentionedAndTotalResultsInQuotesOnlyIfNegativeFallback);
             var wholeNegativeFuzzyMentionsResults = ApplyStrategy(wholeNegativeSets, Strategies.GuessByFuzzyTimesMentioned);
+            ApplyStrategy(wholeNegativeSets, Strategies.GuessByTotalWeightedResults);
             Console.WriteLine();
-
-
-
-
-
-
 
 
             var currentTestSet = fuzzyMentionsResults.Incorrect;

@@ -53,6 +53,26 @@ namespace FindAnswer
             return result;
         }
 
+        public static Dictionary<int, CaseData> SelectByMostWeightedResults(this Dictionary<int, CaseData> casesData)
+        {
+            double maxWeightedResults;
+            maxWeightedResults = casesData.Max(kvp => (double)kvp.Value.SearchResultWithQuestionPrepended.TotalResults/(double)kvp.Value.SearchResult.TotalResults);
+            var result = casesData.Where(kvp =>
+                (double)kvp.Value.SearchResultWithQuestionPrepended.TotalResults / (double)kvp.Value.SearchResult.TotalResults == maxWeightedResults)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return result;
+        }
+
+        public static Dictionary<int, CaseData> SelectByLeastWeightedResults(this Dictionary<int, CaseData> casesData)
+        {
+            var minWeightedResults = casesData.Min(kvp =>
+                kvp.Value.SearchResultWithQuestionPrepended.TotalResults / kvp.Value.SearchResult.TotalResults);
+            var result = casesData.Where(kvp =>
+                    kvp.Value.SearchResultWithQuestionPrepended.TotalResults / kvp.Value.SearchResult.TotalResults == minWeightedResults)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return result;
+        }
+
         public static Dictionary<int, CaseData> SelectByLeastResults(this Dictionary<int, CaseData> casesData)
         {
             var minResults = casesData.Min(kvp => kvp.Value.SearchResultWithQuestionPrepended.TotalResults);

@@ -7,7 +7,8 @@ namespace SandBox
     {
         static void Main(string[] args)
         {
-            Rebackfill();
+//            Rebackfill();
+            Explore();
         }
 
         static void Rebackfill()
