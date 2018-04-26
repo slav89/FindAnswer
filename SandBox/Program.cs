@@ -7,8 +7,8 @@ namespace SandBox
     {
         static void Main(string[] args)
         {
-//            Rebackfill();
-            Explore();
+            var client = new GoogleSearchClient();
+            client.RunRegularSearch("What country started to use Braille on beer cans starting in 2008");
         }
 
         static void Rebackfill()
