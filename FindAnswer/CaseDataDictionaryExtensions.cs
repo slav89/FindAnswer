@@ -28,7 +28,8 @@ namespace FindAnswer
             foreach (var kvp in dataSet.CasesData)
             {
                 kvp.Value.TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(
-                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness);
+                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness)
+                    + TextProcessor.FindNumberOfAnswersInString(dataSet.QuestionData.GoogleBrowserSearchResult, kvp.Value.Case, fuzzyness);
             }
 
             return dataSet.CasesData.SelectByMostMentioned();
@@ -39,7 +40,8 @@ namespace FindAnswer
             foreach (var kvp in dataSet.CasesData)
             {
                 kvp.Value.TimesMentionedInQuestionSearchResult = TextProcessor.FindNumberOfAnswersInString(
-                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness);
+                    dataSet.QuestionData.SearchResult.jsonResult, kvp.Value.Case, fuzzyness)
+                    + TextProcessor.FindNumberOfAnswersInString(dataSet.QuestionData.GoogleBrowserSearchResult, kvp.Value.Case, fuzzyness);
             }
 
             return dataSet.CasesData.SelectByLeastMentioned();

@@ -1,14 +1,13 @@
-﻿using System;
+﻿using BingAndTwitterExample;
+using OpenQA.Selenium.Chrome;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using BingAndTwitterExample;
-using Newtonsoft.Json.Linq;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace FindAnswer
 {
@@ -88,8 +87,18 @@ namespace FindAnswer
             var questionSplitter = new QuestionSplitter(text);
 
             var question = questionSplitter.GetQuestion();
-            Task.Run(() => WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
+//            Task.Run(() => WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
+            WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question);
+//            WebSearchBrowser.Navigate().
             Task.Run(() => ImageSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?tbm=isch&q=" + question));
+
+            var searchResults = WebSearchBrowser.FindElementById("ires");
+            var t = searchResults.Text;
+            var missingRegex = new Regex("\\r\\nMissing: (.+?)\\r\\n");
+            var noMissing = missingRegex.Replace(t, " ");
+            var urlRegex = new Regex("\\r\\nhttp(.+?)\\r\\n");
+            var noUrls = urlRegex.Replace(noMissing, " ");
+            var noNewLines = noUrls.Replace("\r\n", " ");
 
             var a = questionSplitter.GetCaseA();
             var b = questionSplitter.GetCaseB();
@@ -98,7 +107,7 @@ namespace FindAnswer
             Console.WriteLine(i + ". " + question + "?");
 
             var builder = new QuestionDataSetBuilder();
-            var questionDataSet = builder.Build(question, a, b, c);
+            var questionDataSet = builder.Build(question, a, b, c, noNewLines);
 
             //var winnerString = FigureOutRightAnswer(question, a, b, c);
             var winnerString = FigureOutRightAnswer(questionDataSet);

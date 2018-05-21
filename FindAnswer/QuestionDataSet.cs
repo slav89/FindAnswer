@@ -20,6 +20,7 @@ namespace FindAnswer
         public string QuestionForQuery { get; set; }
         public SearchResult SearchResult { get; set; }
         public SearchResult GoogleSearchResult { get; set; }
+        public string GoogleBrowserSearchResult { get; set; }
         public List<string> Attributes { get; set; }
     }
 
