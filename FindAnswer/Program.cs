@@ -27,15 +27,19 @@ namespace FindAnswer
 
         static void Main(string[] args)
         {
-//            var psc = new PastShowsApiClient();
-//            psc.GetTodaysShow();
+//            new DiscordClient().MainAsync().GetAwaiter().GetResult();
+//            return;
+            //            var psc = new PastShowsApiClient();
+            //            psc.GetTodaysShow();
             //TestParsing();
-//            TestGuessing(100);
-//                        var analyzer = new Analyzer();
+            //            TestGuessing(100);
+            //                        var analyzer = new Analyzer();
             //backfiller.Backfill();
-//            analyzer.Explore();
-                        //return;
+            //            analyzer.Explore();
+            //return;
 
+            //            var options = new ChromeOptions();
+            //            options.AddAdditionalCapability("chrome.switches", "--disable-javascript");
             WebSearchBrowser = new ChromeDriver(ChromeDriverPath);
             ImageSearchBrowser = new ChromeDriver(ChromeDriverPath);
 
@@ -52,7 +56,7 @@ namespace FindAnswer
                         var then = DateTime.Now;
                         ProcessScreenshot(i, files[0].FullName);
                         var took = (DateTime.Now - then).TotalMilliseconds;
-                        Console.WriteLine();
+                        Console.WriteLine($"took {took} ms");
                     }
                     catch (Exception e)
                     {
@@ -87,18 +91,50 @@ namespace FindAnswer
             var questionSplitter = new QuestionSplitter(text);
 
             var question = questionSplitter.GetQuestion();
-//            Task.Run(() => WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
-            WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question);
+            //            Task.Run(() => WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question));
+
+           var task =  Task<string>.Run(() =>
+            {
+                WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question);
+                var bsr = "";
+                try
+                {
+                    var searchResults = WebSearchBrowser.FindElementById("ires");
+                    var t = searchResults.Text;
+                    var missingRegex = new Regex("\\r\\nMissing: (.+?)\\r\\n");
+                    var noMissing = missingRegex.Replace(t, " ");
+                    var urlRegex = new Regex("\\r\\nhttp(.+?)\\r\\n");
+                    var noUrls = urlRegex.Replace(noMissing, " ");
+                    bsr = noUrls.Replace("\r\n", " ");
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                return bsr;
+            });
+
+
+//            WebSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + question);
 //            WebSearchBrowser.Navigate().
             Task.Run(() => ImageSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?tbm=isch&q=" + question));
 
-            var searchResults = WebSearchBrowser.FindElementById("ires");
-            var t = searchResults.Text;
-            var missingRegex = new Regex("\\r\\nMissing: (.+?)\\r\\n");
-            var noMissing = missingRegex.Replace(t, " ");
-            var urlRegex = new Regex("\\r\\nhttp(.+?)\\r\\n");
-            var noUrls = urlRegex.Replace(noMissing, " ");
-            var noNewLines = noUrls.Replace("\r\n", " ");
+//            var browserSearchResults = "";
+//            try
+//            {
+//                var searchResults = WebSearchBrowser.FindElementById("ires");
+//                var t = searchResults.Text;
+//                var missingRegex = new Regex("\\r\\nMissing: (.+?)\\r\\n");
+//                var noMissing = missingRegex.Replace(t, " ");
+//                var urlRegex = new Regex("\\r\\nhttp(.+?)\\r\\n");
+//                var noUrls = urlRegex.Replace(noMissing, " ");
+//                browserSearchResults = noUrls.Replace("\r\n", " ");
+//            }
+//            catch
+//            {
+//                // ignored
+//            }
 
             var a = questionSplitter.GetCaseA();
             var b = questionSplitter.GetCaseB();
@@ -107,7 +143,7 @@ namespace FindAnswer
             Console.WriteLine(i + ". " + question + "?");
 
             var builder = new QuestionDataSetBuilder();
-            var questionDataSet = builder.Build(question, a, b, c, noNewLines);
+            var questionDataSet = builder.Build(question, a, b, c, task);
 
             //var winnerString = FigureOutRightAnswer(question, a, b, c);
             var winnerString = FigureOutRightAnswer(questionDataSet);

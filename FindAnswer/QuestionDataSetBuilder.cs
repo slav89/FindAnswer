@@ -21,7 +21,7 @@ namespace FindAnswer
             return set;
         }
 
-        public QuestionDataSet Build(string question, string a, string b, string c, string googleBrowserSearchResult = "")
+        public QuestionDataSet Build(string question, string a, string b, string c, Task<string> browserSearchTask = null)
         {
             var client = new BingSearchClient();
             var googleClient = new GoogleSearchClient();
@@ -52,7 +52,7 @@ namespace FindAnswer
                 Question = question,
                 QuestionForQuery = questionForQuery,
                 SearchResult = searchQuestionTask.Result,
-                GoogleBrowserSearchResult = googleBrowserSearchResult,
+                GoogleBrowserSearchResult = browserSearchTask?.Result,
                 Attributes = new List<string>()
             };
             if (negative) questionData.Attributes.Add("negative");
