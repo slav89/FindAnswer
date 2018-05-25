@@ -24,19 +24,29 @@ namespace FindAnswer
 
         protected static ChromeDriver WebSearchBrowser;
         protected static ChromeDriver ImageSearchBrowser;
+        private static ChromeDriver _webSearchBrowser;
+        private static ChromeDriver _imageSearchBrowser;
 
         static void Main(string[] args)
         {
+            //new HqSocketListener().Connect().GetAwaiter().GetResult();
+            _webSearchBrowser = new ChromeDriver(ChromeDriverPath);
+            _imageSearchBrowser = new ChromeDriver(ChromeDriverPath);
+
+            var listener = new HqSocketListener();
+            listener.QuestionReceived += WorkThequestion;
+            listener.StartPolling().GetAwaiter().GetResult();
+            return;
 //            new DiscordClient().MainAsync().GetAwaiter().GetResult();
 //            return;
-            //            var psc = new PastShowsApiClient();
-            //            psc.GetTodaysShow();
-            //TestParsing();
-            //            TestGuessing(100);
-            //                        var analyzer = new Analyzer();
-            //backfiller.Backfill();
-            //            analyzer.Explore();
-            //return;
+//            var psc = new PastShowsApiClient();
+//            psc.GetTodaysShow();
+//TestParsing();
+//            TestGuessing(100);
+//                        var analyzer = new Analyzer();
+//backfiller.Backfill();
+//            analyzer.Explore();
+//return;
 
             //            var options = new ChromeOptions();
             //            options.AddAdditionalCapability("chrome.switches", "--disable-javascript");
@@ -159,17 +169,17 @@ namespace FindAnswer
             if (guess.Answer == 1)
             {
                 winner = questionDataSet.CasesData[1].Case;
-                winnerLetter = "A.";
+                winnerLetter = "1.";
             }
             else if (guess.Answer == 2)
             {
                 winner = questionDataSet.CasesData[2].Case;
-                winnerLetter = "B.";
+                winnerLetter = "2.";
             }
             else if (guess.Answer == 3)
             {
                 winner = questionDataSet.CasesData[3].Case;
-                winnerLetter = "C.";
+                winnerLetter = "3.";
             }
 
             var winnerString = $"{winnerLetter} {winner}";
@@ -182,6 +192,7 @@ namespace FindAnswer
                 Console.ForegroundColor = ConsoleColor.Green;
 
             Console.WriteLine(confidenceString);
+            Console.WriteLine();
             Console.ResetColor();
             return winnerString;
         }
@@ -293,6 +304,39 @@ namespace FindAnswer
             }
             Console.WriteLine("Success Rate = " + countCorrect + " of " + questionsAndAnswersSet.Count);
             Console.ReadKey();
+        }
+
+        private static Task WorkThequestion(string q, string a, string b, string c)
+        {
+            var task = Task<string>.Run(() =>
+            {
+                _webSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?q=" + q);
+                var bsr = "";
+                try
+                {
+                    var searchResults = WebSearchBrowser.FindElementById("ires");
+                    var t = searchResults.Text;
+                    var missingRegex = new Regex("\\r\\nMissing: (.+?)\\r\\n");
+                    var noMissing = missingRegex.Replace(t, " ");
+                    var urlRegex = new Regex("\\r\\nhttp(.+?)\\r\\n");
+                    var noUrls = urlRegex.Replace(noMissing, " ");
+                    bsr = noUrls.Replace("\r\n", " ");
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                return bsr;
+            });
+
+            Task.Run(() => _imageSearchBrowser.Navigate().GoToUrl("https://www.google.com/search?tbm=isch&q=" + q));
+            Console.WriteLine(q);
+
+            var builder = new QuestionDataSetBuilder();
+            var questionDataSet = builder.Build(q, a, b, c, task);
+            var winnerString = FigureOutRightAnswer(questionDataSet);
+            return Task.CompletedTask;
         }
     }
 }
