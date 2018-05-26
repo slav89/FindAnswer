@@ -81,14 +81,9 @@ namespace FindAnswer
                 a = (string)((JObject) answers[1])["text"];
                 b = (string)((JObject)answers[2])["text"];
                 c = (string)((JObject)answers[3])["text"];
+                if (question != null && a != null && b != null && c != null)
+                    QuestionReceived?.Invoke(question, a, b, c);
             }
-
-            Console.WriteLine(question);
-            Console.WriteLine(a);
-            Console.WriteLine(b);
-            Console.WriteLine(c);
-
-            QuestionReceived?.Invoke(question, a, b, c);
 
             return Task.CompletedTask;
         }
