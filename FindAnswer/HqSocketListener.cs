@@ -22,7 +22,8 @@ namespace FindAnswer
             {
                 var responseJson = restClient.Get(request).Content;
                 var jsonObj = JObject.Parse(responseJson);
-                var socketUrl = (string) jsonObj["socketUrl"];
+                var broadCast = (JObject)jsonObj["broadcast"];
+                var socketUrl = (string) broadCast["socketUrl"];
                 if (socketUrl != null)
                 {
                     started = true;
@@ -61,6 +62,10 @@ namespace FindAnswer
 
         private Task OnTextMessage(string message)
         {
+            //if (message.Contains("question"))
+            //{
+                //Console.WriteLine(message);
+            //}
             var jsonObj = JObject.Parse(message);
             var type = (string) jsonObj["type"];
 
